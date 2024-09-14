@@ -82,7 +82,7 @@ public class ChessPiece {
                     col += directionX[i];
                     row += directionY[i];
 
-                    if (col < 0 || col > 7 || row < 0 || row > 7) {
+                    if (col < 1 || col > 8 || row < 1 || row > 8) {
                         break;
                     }
 

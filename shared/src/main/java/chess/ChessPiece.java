@@ -25,7 +25,7 @@ public class ChessPiece {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessPiece that = (ChessPiece) o;
-        return type == that.type;
+        return type == that.type && pieceColor ==that.pieceColor;
     }
 
     @Override
@@ -68,44 +68,26 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         var myPiece = board.getPiece(myPosition);
-        Collection<ChessMove> moves = new HashSet<>();
 
         if (myPiece.getPieceType() == PieceType.BISHOP) {
-            int[] directionX = {-1, 1, -1, 1}; //We're going to do two arrays of four so we don't have to do a nested loop
-            int[] directionY = {-1, -1, 1, 1}; //So it's diagonal left-down, diagonal right-down, diagonal left-up, diagonal right-up
-
-            for (int i = 0; i < directionX.length; i++) {
-                int col = myPosition.getColumn();
-                int row = myPosition.getRow();
-
-                while (true) {
-                    col += directionX[i];
-                    row += directionY[i];
-
-                    if (col < 1 || col > 8 || row < 1 || row > 8) {
-                        break;
-                    }
-
-                    ChessPosition newPosition = new ChessPosition(row, col);
-                    ChessPiece checkSquare = board.getPiece(newPosition);
-
-                    //Check what's in the square we're trying to move to
-                    if (checkSquare != null) {
-                        //If the piece is an enemy piece, it's still a valid move because we can capture it
-                        if (checkSquare.getTeamColor() != getTeamColor()) {
-                            moves.add(new ChessMove(myPosition, newPosition, null));
-                        }
-                        //If there was a piece, whoever it belonged to, we can't move past it
-                        break;
-                    }
-                    else {
-                        //If the square is empty, we add it and keep going
-                        moves.add(new ChessMove(myPosition, newPosition, null));
-                    }
-                }
-            }
+            PieceMovesCalculator movesCalculator = new BishopMovesCalculator();
+            return movesCalculator.pieceMoves(board, myPosition, myPiece);
+        } else if (myPiece.getPieceType() == PieceType.KING) {
+            PieceMovesCalculator movesCalculator = new KingMovesCalculator();
+            return movesCalculator.pieceMoves(board, myPosition, myPiece);
+        } else if (myPiece.getPieceType() == PieceType.KNIGHT) {
+            PieceMovesCalculator movesCalculator = new KnightMovesCalculator();
+            return movesCalculator.pieceMoves(board, myPosition, myPiece);
+        } else if (myPiece.getPieceType() == PieceType.PAWN) {
+            PieceMovesCalculator movesCalculator = new PawnMovesCalculator();
+            return movesCalculator.pieceMoves(board, myPosition, myPiece);
+        } else if (myPiece.getPieceType() == PieceType.QUEEN) {
+            PieceMovesCalculator movesCalculator = new QueenMovesCalculator();
+            return movesCalculator.pieceMoves(board, myPosition, myPiece);
+        } else {
+            PieceMovesCalculator movesCalculator = new RookMovesCalculator();
+            return movesCalculator.pieceMoves(board, myPosition, myPiece);
         }
-        return moves;
     }
 
 //    @Override

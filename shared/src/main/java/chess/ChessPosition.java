@@ -34,13 +34,13 @@ public class ChessPosition {
         return col;
     }
 
-    @Override
-    public String toString() {
-        return "Chess Position{" +
-                "row = " + getRow() +
-                ", column = " + getColumn() +
-                "}";
-    }
+//    @Override
+//    public String toString() {
+//        return "Chess Position{" +
+//                "row = " + getRow() +
+//                ", column = " + getColumn() +
+//                "}";
+//    }
 
     @Override
     public boolean equals(Object o) {

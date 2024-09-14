@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -12,9 +13,11 @@ import java.util.Objects;
  */
 public class ChessPiece {
     private PieceType type;
+    private ChessGame.TeamColor pieceColor;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type;
+        this.pieceColor = pieceColor;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return pieceColor;
     }
 
     /**
@@ -65,17 +68,51 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         var myPiece = board.getPiece(myPosition);
+        Collection<ChessMove> moves = new HashSet<>();
+
         if (myPiece.getPieceType() == PieceType.BISHOP) {
+            int[] directionX = {-1, 1, -1, 1}; //We're going to do two arrays of four so we don't have to do a nested loop
+            int[] directionY = {-1, -1, 1, 1}; //So it's diagonal left-down, diagonal right-down, diagonal left-up, diagonal right-up
 
+            for (int i = 0; i < directionX.length; i++) {
+                int col = myPosition.getColumn();
+                int row = myPosition.getRow();
+
+                while (true) {
+                    col += directionX[i];
+                    row += directionY[i];
+
+                    if (col < 0 || col > 7 || row < 0 || row > 7) {
+                        break;
+                    }
+
+                    ChessPosition newPosition = new ChessPosition(row, col);
+                    ChessPiece checkSquare = board.getPiece(newPosition);
+
+                    //Check what's in the square we're trying to move to
+                    if (checkSquare != null) {
+                        //If the piece is an enemy piece, it's still a valid move because we can capture it
+                        if (checkSquare.getTeamColor() != getTeamColor()) {
+                            moves.add(new ChessMove(myPosition, newPosition, null));
+                        }
+                        //If there was a piece, whoever it belonged to, we can't move past it
+                        break;
+                    }
+                    else {
+                        //If the square is empty, we add it and keep going
+                        moves.add(new ChessMove(myPosition, newPosition, null));
+                    }
+                }
+            }
         }
-        return new ArrayList<>();
+        return moves;
     }
 
-    @Override
-    public String toString() {
-        return "ChessPiece{" +
-                "type = " + type +
-                ", teamColor = " + getTeamColor() +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "ChessPiece{" +
+//                "type = " + type +
+//                ", teamColor = " + getTeamColor() +
+//                '}';
+//    }
 }

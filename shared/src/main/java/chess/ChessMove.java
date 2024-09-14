@@ -36,12 +36,12 @@ public class ChessMove {
         throw new RuntimeException("Not implemented");
     }
 
-    @Override
-    public String toString() {
-        return "ChessMove{" +
-                "startPosition = " + getStartPosition() +
-                ", endPosition = " + getEndPosition() +
-                ", promotionPiece = " + getPromotionPiece() +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "ChessMove{" +
+//                "startPosition = " + getStartPosition() +
+//                ", endPosition = " + getEndPosition() +
+//                ", promotionPiece = " + getPromotionPiece() +
+//                '}';
+//    }
 }

@@ -37,6 +37,14 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         int col = position.getColumn();
         row += possibleMoves[0];
 
+        //Check to see if we'll need to be promoting any pieces.
+        //There will never be a case in which we're in the initial position & need to promote, so we don't need to
+        //worry about that conflicting.
+        ChessPiece promotionPiece = null;
+        if (requiresPromotion(position, pawnColor)) {
+            //Try and figure out how this works
+        }
+
         //Check to see if the space in front is occupied (a pawn in any position can do this, so we do this first)
         ChessPosition newPosition = new ChessPosition(row, col);
         ChessPiece checkSquare = board.getPiece(newPosition);

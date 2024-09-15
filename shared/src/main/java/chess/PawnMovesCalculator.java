@@ -37,12 +37,27 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         int col = position.getColumn();
         row += possibleMoves[0];
 
-        //Check to see if the space in front is occupied
+        //Check to see if the space in front is occupied (a pawn in any position can do this, so we do this first)
         ChessPosition newPosition = new ChessPosition(row, col);
         ChessPiece checkSquare = board.getPiece(newPosition);
 
-        if (checkSquare != null) {
+        if (checkSquare == null) {
             moves.add(new ChessMove(position, newPosition, null));
+            //Check for and handle initial move - we do this here because if there's a piece at first square, we still can't move to second
+            if (isInitialMove(position, pawnColor)) {
+                row -= possibleMoves[0];
+                row += possibleMoves[1];
+
+                //Check to see if the space two spaces away is occupied
+                newPosition = new ChessPosition(row, col);
+                checkSquare = board.getPiece(newPosition);
+
+                if (checkSquare == null) {
+                    moves.add(new ChessMove(position, newPosition, null));
+                }
+                row -= possibleMoves[1];
+                row += possibleMoves[0];
+            }
         }
 
         //Check for diagonal attack moves (we will do this second because a pawn in any position is eligible for this move)
@@ -58,26 +73,12 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
                 moves.add(new ChessMove(position, rightDiagonal, null));
             }
         }
-
-        //Check for and handle initial move
-        if (isInitialMove(position, pawnColor)) {
-            row -= possibleMoves[0];
-            row += possibleMoves[1];
-
-            //Check to see if the space two spaces away is occupied
-            newPosition = new ChessPosition(row, col);
-            checkSquare = board.getPiece(newPosition);
-
-            if (checkSquare != null) {
-                moves.add(new ChessMove(position, newPosition, null));
-            }
-        }
         return moves;
     }
 
     private Boolean isInitialMove(ChessPosition position, ChessGame.TeamColor pawnColor) {
-        if ((pawnColor == ChessGame.TeamColor.WHITE && position.getRow() == 3) ||
-                (pawnColor == ChessGame.TeamColor.BLACK && position.getRow() == 6)) {
+        if ((pawnColor == ChessGame.TeamColor.WHITE && position.getRow() == 2) ||
+                (pawnColor == ChessGame.TeamColor.BLACK && position.getRow() == 7)) {
             return Boolean.TRUE;
         } else {
             return Boolean.FALSE;
@@ -85,12 +86,10 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
     }
 
     private Boolean checkDiagonal(ChessPosition diagonal, ChessBoard board, ChessGame.TeamColor pawnColor) {
-        if ( diagonal != null) {
-            ChessPiece enemyUnit = board.getPiece(diagonal);
-            if (enemyUnit != null) {
-                if (enemyUnit.getTeamColor() != pawnColor) {
-                    return Boolean.TRUE;
-                }
+        ChessPiece enemyUnit = board.getPiece(diagonal);
+        if (enemyUnit != null) {
+            if (enemyUnit.getTeamColor() != pawnColor) {
+                return Boolean.TRUE;
             }
         }
         return Boolean.FALSE;

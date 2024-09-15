@@ -43,7 +43,30 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        //Clear chess board
+        for (int row = 0; row < squares.length; row++) {
+            for (int col = 0; col < squares[row].length; col++) {
+                squares[row][col] = null;
+            }
+        }
+        //Place new pieces
+        //First the pawns
+        for (int col = 0; col < squares[1].length; col++) {
+            squares[1][col] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+        }
+        for (int col = 0; col < squares[6].length; col++) {
+            squares[6][col] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+        }
+        //Now the rest of the pieces
+        ChessPiece.PieceType[] piecePattern = {ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.KING,
+                ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.ROOK};
+        for (int col = 0; col < squares[0].length; col++) {
+            squares[0][col] = new ChessPiece(ChessGame.TeamColor.WHITE, piecePattern[col]);
+        }
+        for (int col = 0; col < squares[7].length; col++) {
+            squares[7][col] = new ChessPiece(ChessGame.TeamColor.BLACK, piecePattern[col]);
+        }
     }
 
     @Override

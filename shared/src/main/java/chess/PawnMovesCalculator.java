@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -40,9 +41,12 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         //Check to see if we'll need to be promoting any pieces.
         //There will never be a case in which we're in the initial position & need to promote, so we don't need to
         //worry about that conflicting.
-        ChessPiece promotionPiece = null;
+        ArrayList<ChessPiece.PieceType> possiblePromotions = new ArrayList<>();
         if (requiresPromotion(position, pawnColor)) {
-            //Try and figure out how this works
+            possiblePromotions.add(ChessPiece.PieceType.BISHOP);
+            possiblePromotions.add(ChessPiece.PieceType.KNIGHT);
+            possiblePromotions.add(ChessPiece.PieceType.QUEEN);
+            possiblePromotions.add(ChessPiece.PieceType.ROOK);
         }
 
         //Check to see if the space in front is occupied (a pawn in any position can do this, so we do this first)
@@ -50,7 +54,13 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         ChessPiece checkSquare = board.getPiece(newPosition);
 
         if (checkSquare == null) {
-            moves.add(new ChessMove(position, newPosition, null));
+            if (!possiblePromotions.isEmpty()) {
+                for (ChessPiece.PieceType pieceType : possiblePromotions) {
+                    moves.add(new ChessMove(position, newPosition, pieceType));
+                }
+            } else {
+                moves.add(new ChessMove(position, newPosition, null));
+            }
             //Check for and handle initial move - we do this here because if there's a piece at first square, we still can't move to second
             if (isInitialMove(position, pawnColor)) {
                 row -= possibleMoves[0];
@@ -72,13 +82,25 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         if (0 <= col - 1) {
             ChessPosition leftDiagonal = new ChessPosition(row, col - 1);
             if (checkDiagonal(leftDiagonal, board, pawnColor)) {
-                moves.add(new ChessMove(position, leftDiagonal, null));
+                if (!possiblePromotions.isEmpty()) {
+                    for (ChessPiece.PieceType pieceType : possiblePromotions) {
+                        moves.add(new ChessMove(position, leftDiagonal, pieceType));
+                    }
+                } else {
+                    moves.add(new ChessMove(position, leftDiagonal, null));
+                }
             }
         }
         if (8 >= col + 1) {
             ChessPosition rightDiagonal = new ChessPosition(row, col + 1);
             if (checkDiagonal(rightDiagonal, board, pawnColor)) {
-                moves.add(new ChessMove(position, rightDiagonal, null));
+                if (!possiblePromotions.isEmpty()) {
+                    for (ChessPiece.PieceType pieceType : possiblePromotions) {
+                        moves.add(new ChessMove(position, rightDiagonal, pieceType));
+                    }
+                } else {
+                    moves.add(new ChessMove(position, rightDiagonal, null));
+                }
             }
         }
         return moves;
@@ -104,10 +126,11 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
     }
 
     private Boolean requiresPromotion(ChessPosition position, ChessGame.TeamColor pawnColor) {
-        throw new RuntimeException("Not implemented");
-    }
-
-    private ChessPiece promotePawn(ChessPiece originalPawn) {
-        throw new RuntimeException("Not implemented");
+        if ((pawnColor == ChessGame.TeamColor.WHITE && position.getRow() == 7) ||
+                (pawnColor == ChessGame.TeamColor.BLACK && position.getRow() == 2)) {
+            return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
+        }
     }
 }

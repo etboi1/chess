@@ -79,7 +79,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         }
 
         //Check for diagonal attack moves (we will do this second because a pawn in any position is eligible for this move)
-        if (0 <= col - 1) {
+        if (0 < col - 1) {
             ChessPosition leftDiagonal = new ChessPosition(row, col - 1);
             if (checkDiagonal(leftDiagonal, board, pawnColor)) {
                 if (!possiblePromotions.isEmpty()) {

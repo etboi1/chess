@@ -10,17 +10,6 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<>();
 
-        //I will need to implement the following characteristics:
-        //  DONE 1. White pawns can only move up the 2D array, black pawns can only move down
-        //  DONE 2. On the initial move, pawns can move 2 spaces
-        //      a. white pawns start in row 3, black pawns in row 6
-        //  DONE 3. Pawns are blocked by a piece of ANY color directly in front of them
-        //  DONE 4. Pawns can capture an enemy piece to the diagonal
-        //      a. this means they can only move diagonally when it is an enemy piece to the diagonal
-        //  5. When a pawn reaches the opposite side, they may promote to a new piece
-        //      a. the opposite side is row 8 for white, row 1 for black
-        //      b. the user should be able to pick which piece they can promote to
-
         ChessGame.TeamColor pawnColor = piece.getTeamColor();
         int[] possibleMoves = new int[2];
 

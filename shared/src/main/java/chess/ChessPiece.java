@@ -12,8 +12,8 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPiece {
-    private PieceType type;
-    private ChessGame.TeamColor pieceColor;
+    private final PieceType type;
+    private final ChessGame.TeamColor pieceColor;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type;
@@ -69,25 +69,14 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         var myPiece = board.getPiece(myPosition);
 
-        if (myPiece.getPieceType() == PieceType.BISHOP) {
-            PieceMovesCalculator movesCalculator = new BishopMovesCalculator();
-            return movesCalculator.pieceMoves(board, myPosition, myPiece);
-        } else if (myPiece.getPieceType() == PieceType.KING) {
-            PieceMovesCalculator movesCalculator = new KingMovesCalculator();
-            return movesCalculator.pieceMoves(board, myPosition, myPiece);
-        } else if (myPiece.getPieceType() == PieceType.KNIGHT) {
-            PieceMovesCalculator movesCalculator = new KnightMovesCalculator();
-            return movesCalculator.pieceMoves(board, myPosition, myPiece);
-        } else if (myPiece.getPieceType() == PieceType.PAWN) {
-            PieceMovesCalculator movesCalculator = new PawnMovesCalculator();
-            return movesCalculator.pieceMoves(board, myPosition, myPiece);
-        } else if (myPiece.getPieceType() == PieceType.QUEEN) {
-            PieceMovesCalculator movesCalculator = new QueenMovesCalculator();
-            return movesCalculator.pieceMoves(board, myPosition, myPiece);
-        } else {
-            PieceMovesCalculator movesCalculator = new RookMovesCalculator();
-            return movesCalculator.pieceMoves(board, myPosition, myPiece);
-        }
+        return switch (myPiece.getPieceType()) {
+            case PieceType.BISHOP -> new BishopMovesCalculator().pieceMoves(board, myPosition, myPiece);
+            case PieceType.KING -> new KingMovesCalculator().pieceMoves(board, myPosition, myPiece);
+            case PieceType.KNIGHT -> new KnightMovesCalculator().pieceMoves(board, myPosition, myPiece);
+            case PieceType.PAWN -> new PawnMovesCalculator().pieceMoves(board, myPosition, myPiece);
+            case PieceType.QUEEN -> new QueenMovesCalculator().pieceMoves(board, myPosition, myPiece);
+            case PieceType.ROOK -> new RookMovesCalculator().pieceMoves(board, myPosition, myPiece);
+        };
     }
 
 //    @Override

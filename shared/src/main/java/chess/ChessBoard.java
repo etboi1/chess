@@ -23,7 +23,11 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         //I'm subtracting 1 to mimic a 1-indexed 2D array like the tests use
-        squares[position.getRow() - 1][position.getColumn() - 1 ] = piece;
+        squares[position.getRow() - 1][position.getColumn() - 1] = piece;
+    }
+
+    public void removePiece(ChessPosition position) {
+        squares[position.getRow() - 1][position.getColumn() - 1] = null;
     }
 
     /**

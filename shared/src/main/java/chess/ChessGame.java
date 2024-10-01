@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -10,7 +11,7 @@ import java.util.HashSet;
  * signature of the existing methods.
  */
 public class ChessGame {
-    private final ChessBoard gameBoard = new ChessBoard();
+    private ChessBoard gameBoard = new ChessBoard();
     private TeamColor currentTeam = TeamColor.WHITE;
 
     public ChessGame() {
@@ -31,6 +32,19 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         currentTeam = team;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(gameBoard, chessGame.gameBoard) && currentTeam == chessGame.currentTeam;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * Objects.hash(gameBoard, currentTeam);
     }
 
     /**
@@ -65,7 +79,17 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPiece piece = gameBoard.getPiece(startPosition);
+
+        //Check for promotion
+        if (move.getPromotionPiece() != null) {
+            piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+        }
+
+        gameBoard.addPiece(endPosition, piece);
+        gameBoard.removePiece(startPosition);
     }
 
     /**
@@ -105,7 +129,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        gameBoard = board;
     }
 
     /**

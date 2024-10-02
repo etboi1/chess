@@ -82,14 +82,20 @@ public class ChessGame {
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
         ChessPiece piece = gameBoard.getPiece(startPosition);
+        Collection<ChessMove> allValid = validMoves(startPosition);
 
-        //Check for promotion
-        if (move.getPromotionPiece() != null) {
-            piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+        //Only make the move if it's a valid move
+        if (allValid != null && allValid.contains(move)) {
+            //Check for promotion
+            if (move.getPromotionPiece() != null) {
+                piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+            }
+
+            gameBoard.addPiece(endPosition, piece);
+            gameBoard.removePiece(startPosition);
+        } else {
+            throw new InvalidMoveException();
         }
-
-        gameBoard.addPiece(endPosition, piece);
-        gameBoard.removePiece(startPosition);
     }
 
     /**

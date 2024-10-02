@@ -34,6 +34,14 @@ public class ChessGame {
         currentTeam = team;
     }
 
+    private void nextTurn() {
+        if (currentTeam == TeamColor.WHITE) {
+            currentTeam = TeamColor.BLACK;
+        } else {
+            currentTeam = TeamColor.WHITE;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -84,18 +92,21 @@ public class ChessGame {
         ChessPiece piece = gameBoard.getPiece(startPosition);
         Collection<ChessMove> allValid = validMoves(startPosition);
 
+        if (piece != null && currentTeam == piece.getTeamColor()) {
         //Only make the move if it's a valid move
-        if (allValid != null && allValid.contains(move)) {
-            //Check for promotion
-            if (move.getPromotionPiece() != null) {
-                piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
-            }
+            if (allValid.contains(move)) {
+                //Check for promotion
+                if (move.getPromotionPiece() != null) {
+                    piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+                }
 
-            gameBoard.addPiece(endPosition, piece);
-            gameBoard.removePiece(startPosition);
-        } else {
-            throw new InvalidMoveException();
+                gameBoard.addPiece(endPosition, piece);
+                gameBoard.removePiece(startPosition);
+                nextTurn();
+                return;
+            }
         }
+        throw new InvalidMoveException();
     }
 
     /**

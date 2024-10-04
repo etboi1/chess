@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -71,11 +72,22 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ChessBoard board = getBoard();
-        ChessPiece piece = board.getPiece(startPosition);
+        ChessPiece piece = gameBoard.getPiece(startPosition);
 
         if (piece != null) {
-            return piece.pieceMoves(board, startPosition);
+            Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
+            Iterator<ChessMove> iterator = moves.iterator();
+            while (iterator.hasNext()) {
+                ChessMove move = iterator.next();
+                gameBoard.removePiece(move.getStartPosition());
+                gameBoard.addPiece(move.getEndPosition(), piece);
+                if (isInCheck(piece.getTeamColor())) {
+                    iterator.remove();
+                }
+                gameBoard.addPiece(move.getStartPosition(), piece);
+                gameBoard.removePiece(move.getEndPosition());
+            }
+            return moves;
         }
         return null;
     }
@@ -135,16 +147,35 @@ public class ChessGame {
                 ChessPosition square = new ChessPosition(row, col);
                 ChessPiece piece = gameBoard.getPiece(square);
                 if (piece != null && piece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> allValid = validMoves(square);
-                    for (ChessMove move : allValid) {
-                        if (move.getEndPosition().equals(currentKing)) {
-                            return Boolean.TRUE;
-                        }
+                    //Check if each enemy piece can capture king
+                    if (canPieceThreaten(piece, square, currentKing)) {
+                        return Boolean.TRUE;
                     }
                 }
             }
         };
         return Boolean.FALSE;
+    }
+
+    private boolean canPieceThreaten(ChessPiece piece, ChessPosition startPosition, ChessPosition endPosition) {
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(gameBoard, startPosition);
+
+        for (ChessMove move : possibleMoves) {
+            if (move.getEndPosition().equals(endPosition)) {
+                //For each move a piece can make, check if it would put its own king in check
+                //Do this by making and then reversing move
+                gameBoard.removePiece(startPosition);
+                gameBoard.addPiece(endPosition, piece);
+                boolean resultsInCheck = isInCheck(piece.getTeamColor());
+                gameBoard.addPiece(startPosition, piece);
+                gameBoard.removePiece(endPosition);
+
+                if (!resultsInCheck) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

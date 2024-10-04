@@ -208,19 +208,23 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         //Should be the exact same as checkmate, except we just don't check if the team is in check at the beginning
-        for (int row = 1; row <= 8; row++) {
-            for (int col = 1; col <= 8; col++) {
-                ChessPosition square = new ChessPosition(row, col);
-                ChessPiece piece = gameBoard.getPiece(square);
-                if (piece != null && piece.getTeamColor() == teamColor) {
-                    Collection<ChessMove> possibleMoves = validMoves(square);
-                    if (possibleMoves != null && !possibleMoves.isEmpty()) {
-                        return false;
+        //We'll include a check to make sure the team isn't in checkmate
+        if (!isInCheckmate(teamColor)) {
+            for (int row = 1; row <= 8; row++) {
+                for (int col = 1; col <= 8; col++) {
+                    ChessPosition square = new ChessPosition(row, col);
+                    ChessPiece piece = gameBoard.getPiece(square);
+                    if (piece != null && piece.getTeamColor() == teamColor) {
+                        Collection<ChessMove> possibleMoves = validMoves(square);
+                        if (possibleMoves != null && !possibleMoves.isEmpty()) {
+                            return false;
+                        }
                     }
                 }
             }
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**

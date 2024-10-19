@@ -1,4 +1,5 @@
 package request;
 
-public record RegisterRequest(String username, String password, String email) {
+public class RegisterRequest extends LoginRequest {
+    String email;
 }

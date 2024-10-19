@@ -1,4 +1,5 @@
 package response;
 
-public class CreateGameResponse {
+public class CreateGameResponse extends Response {
+    String gameName;
 }

@@ -14,7 +14,7 @@ public class Server {
     private final GameDAO gameDataAccess = new MemoryGameDAO();
     private final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
     private final UserService userService = new UserService(userDataAccess, authDataAccess);
-    private final AuthService authService = new AuthService(authDataAccess);
+    private final AuthService authService = new AuthService(authDataAccess, userDataAccess);
     private final GameService gameService = new GameService(gameDataAccess);
     private final Gson serializer = new Gson();
 
@@ -25,6 +25,7 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::createUser);
+        Spark.post("/session", this::loginUser);
         Spark.delete("/db", this::clearDatabase);
         Spark.exception(Exception.class, this::exceptionHandler);
 
@@ -41,6 +42,12 @@ public class Server {
         return serializer.toJson(result);
     }
 
+    private Object loginUser(Request req, Response res) throws Exception{
+        UserData user = serializer.fromJson(req.body(), UserData.class);
+        var result = authService.loginUser(user);
+        return serializer.toJson(result);
+    }
+
     private Object clearDatabase(Request req, Response res) throws Exception{
         clearService.clearData();
         res.status(200);
@@ -48,10 +55,12 @@ public class Server {
     }
 
     private void exceptionHandler(Exception ex, Request req, Response res) {
-        if (ex instanceof RedundantDataException) {
-            res.status(403);
-        } else if (ex instanceof BadRequestException) {
+        if (ex instanceof BadRequestException) {
             res.status(400);
+        } else if (ex instanceof UnauthorizedException) {
+            res.status(401);
+        } else if (ex instanceof RedundantDataException) {
+            res.status(403);
         } else {
             res.status(500);
         }

@@ -3,10 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import model.UserData;
-import service.AuthService;
-import service.ClearService;
-import service.GameService;
-import service.UserService;
+import service.*;
 import spark.*;
 
 import java.util.Map;
@@ -51,7 +48,13 @@ public class Server {
     }
 
     private void exceptionHandler(Exception ex, Request req, Response res) {
-        res.status(500);
+        if (ex instanceof RedundantDataException) {
+            res.status(403);
+        } else if (ex instanceof BadRequestException) {
+            res.status(400);
+        } else {
+            res.status(500);
+        }
         res.body(serializer.toJson(Map.of("message", ex.getMessage())));
         ex.printStackTrace(System.out);
     }

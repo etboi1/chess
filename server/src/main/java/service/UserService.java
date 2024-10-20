@@ -17,9 +17,11 @@ public class UserService {
         this.authDataAccess = authDataAccess;
     }
 
-    public LoginRegisterResponse registerUser(UserData newUser) throws ServiceException {
+    public LoginRegisterResponse registerUser(UserData newUser) throws Exception {
         if (userDataAccess.getUser(newUser.username()) != null) {
-            throw new ServiceException("User already exists");
+            throw new RedundantDataException("Error: User already exists");
+        } else if (newUser.password() == null) {
+            throw new BadRequestException("Error: Bad Request");
         }
         userDataAccess.createUser(newUser);
         var authData =  authDataAccess.createAuth(new AuthData(UUID.randomUUID().toString(), newUser.username()));

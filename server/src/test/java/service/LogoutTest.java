@@ -32,4 +32,19 @@ public class LogoutTest {
 
         Assertions.assertNull(authDataAccess.getAuth(auth));
     }
+
+    @Test
+    @DisplayName("Unsuccessful logout - wrong authtoken")
+    public void logoutFailure() throws Exception {
+        UserData user = new UserData("bill", "billisbest", "bill@bill.com");
+        AuthData auth = new AuthData("authToken", "bill");
+        AuthData badAuth = new AuthData("badAuth", "bill");
+        userDataAccess.createUser(user);
+        authDataAccess.createAuth(auth);
+
+        Exception ex = Assertions.assertThrows(UnauthorizedException.class, () -> {
+            userService.logoutUser(badAuth);
+        });
+        Assertions.assertEquals("Error: unauthorized", ex.getMessage());
+    }
 }

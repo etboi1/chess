@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
+import model.AuthData;
 import model.UserData;
 import service.*;
 import spark.*;
@@ -22,9 +23,13 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        // Check for authentication for game endpoints before allowing them to be handled
+
+
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::createUser);
         Spark.post("/session", this::loginUser);
+        Spark.delete("/session", this::logoutUser);
         Spark.delete("/db", this::clearDatabase);
         Spark.exception(Exception.class, this::exceptionHandler);
 
@@ -45,6 +50,14 @@ public class Server {
         UserData user = serializer.fromJson(req.body(), UserData.class);
         var result = userService.loginUser(user);
         return serializer.toJson(result);
+    }
+
+    private Object logoutUser(Request req, Response res) throws Exception{
+        String authToken = req.headers("authorization");
+        AuthData auth = new AuthData(authToken, null);
+        userService.logoutUser(auth);
+        res.status(200);
+        return "";
     }
 
     private Object clearDatabase(Request req, Response res) throws Exception{

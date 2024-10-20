@@ -1,7 +1,11 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.*;
+import model.AuthData;
+import model.GameData;
 import model.UserData;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +28,19 @@ public class ClearServiceTest {
 
     @Test
     public void clearData() throws Exception{
-        UserData user = new UserData("tusername", "tpassword", "temail");
-        userService.registerUser(user);
+        //Add a user, authData, and game to each hashmap stored in memory
+        UserData user = new UserData("testUsername", "testPassword", "testEmail");
+        AuthData auth = new AuthData("authToken", "testUser");
+        GameData game = new GameData("1234", "black", "white", "name", new ChessGame());
+        userDataAccess.createUser(user);
+        authDataAccess.createAuth(auth);
+        gameDataAccess.createGame(game);
+
+        //Now clear and make sure they're empty
         clearService.clearData();
+
+        Assertions.assertNull(userDataAccess.getUser("testUsername"));
+        Assertions.assertNull(authDataAccess.getAuth(auth));
+        Assertions.assertTrue(gameDataAccess.listGames().isEmpty());
     }
 }

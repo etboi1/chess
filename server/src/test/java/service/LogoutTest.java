@@ -11,13 +11,13 @@ import org.junit.jupiter.api.Test;
 public class LogoutTest {
     static private UserDAO userDataAccess;
     static private AuthDAO authDataAccess;
-    static private AuthService authService;
+    static private UserService userService;
 
     @BeforeAll
     public static void init() {
         userDataAccess = new MemoryUserDAO();
         authDataAccess = new MemoryAuthDAO();
-        authService = new AuthService(authDataAccess, userDataAccess);
+        userService = new UserService(authDataAccess, userDataAccess);
     }
 
     @Test
@@ -28,7 +28,7 @@ public class LogoutTest {
         userDataAccess.createUser(user);
         authDataAccess.createAuth(auth);
 
-        authService.logoutUser(auth);
+        userService.logoutUser(auth);
 
         Assertions.assertNull(authDataAccess.getAuth(auth));
     }

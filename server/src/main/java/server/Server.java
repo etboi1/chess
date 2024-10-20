@@ -13,8 +13,7 @@ public class Server {
     private final AuthDAO authDataAccess = new MemoryAuthDAO();
     private final GameDAO gameDataAccess = new MemoryGameDAO();
     private final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
-    private final UserService userService = new UserService(userDataAccess, authDataAccess);
-    private final AuthService authService = new AuthService(authDataAccess, userDataAccess);
+    private final UserService userService = new UserService(authDataAccess, userDataAccess);
     private final GameService gameService = new GameService(gameDataAccess);
     private final Gson serializer = new Gson();
 
@@ -44,7 +43,7 @@ public class Server {
 
     private Object loginUser(Request req, Response res) throws Exception{
         UserData user = serializer.fromJson(req.body(), UserData.class);
-        var result = authService.loginUser(user);
+        var result = userService.loginUser(user);
         return serializer.toJson(result);
     }
 

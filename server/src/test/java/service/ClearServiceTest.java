@@ -23,7 +23,7 @@ public class ClearServiceTest {
         authDataAccess = new MemoryAuthDAO();
         gameDataAccess = new MemoryGameDAO();
         clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
-        userService = new UserService(userDataAccess, authDataAccess);
+        userService = new UserService(authDataAccess, userDataAccess);
     }
 
     @Test

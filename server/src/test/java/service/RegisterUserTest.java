@@ -17,7 +17,7 @@ public class RegisterUserTest {
         userDataAccess = new MemoryUserDAO();
         authDataAccess = new MemoryAuthDAO();
         gameDataAccess = new MemoryGameDAO();
-        userService = new UserService(userDataAccess, authDataAccess);
+        userService = new UserService(authDataAccess, userDataAccess);
         clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
         clearService.clearData();
     }

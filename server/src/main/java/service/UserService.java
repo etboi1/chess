@@ -6,15 +6,16 @@ import model.AuthData;
 import model.UserData;
 import response.LoginRegisterResponse;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
-    private final UserDAO userDataAccess;
     private final AuthDAO authDataAccess;
+    private final UserDAO userDataAccess;
 
-    public UserService(UserDAO userDataAccess, AuthDAO authDataAccess) {
-        this.userDataAccess = userDataAccess;
+    public UserService(AuthDAO authDataAccess, UserDAO userDataAccess) {
         this.authDataAccess = authDataAccess;
+        this.userDataAccess = userDataAccess;
     }
 
     public LoginRegisterResponse registerUser(UserData newUser) throws Exception {
@@ -26,5 +27,18 @@ public class UserService {
         userDataAccess.createUser(newUser);
         var authData =  authDataAccess.createAuth(new AuthData(UUID.randomUUID().toString(), newUser.username()));
         return new LoginRegisterResponse(authData.authToken(), authData.username());
+    }
+
+    public LoginRegisterResponse loginUser(UserData user) throws Exception {
+        if (userDataAccess.getUser(user.username()) == null || !Objects.equals(userDataAccess.getUser(user.username()).password(), user.password())) {
+            throw new UnauthorizedException("Error: unauthorized");
+        }
+        AuthData authData = new AuthData(UUID.randomUUID().toString(), user.username());
+        authDataAccess.createAuth(authData);
+        return new LoginRegisterResponse(authData.authToken(), user.username());
+    }
+
+    public void logoutUser(AuthData auth) throws Exception {
+
     }
 }

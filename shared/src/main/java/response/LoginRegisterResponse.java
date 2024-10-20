@@ -1,6 +1,4 @@
 package response;
 
-public class LoginRegisterResponse extends Response {
-    String authToken;
-    String username;
+public record LoginRegisterResponse (String authToken, String username){
 }

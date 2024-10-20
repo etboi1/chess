@@ -26,4 +26,8 @@ public class AuthService {
         authDataAccess.createAuth(authData);
         return new LoginRegisterResponse(authData.authToken(), user.username());
     }
+
+    public void logoutUser(AuthData auth) throws Exception {
+
+    }
 }

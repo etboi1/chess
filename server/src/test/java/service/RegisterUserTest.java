@@ -23,19 +23,25 @@ public class RegisterUserTest {
     }
 
     @Test
-    @Order(1)
     @DisplayName("Normal User Registration")
     public void RegisterSuccess() throws Exception {
         UserData user = new UserData("testUser", "testPassword", "testEmail");
         var result = userService.registerUser(user);
-        Assertions.assertEquals(user, result);
+
+        //Check that the response object isn't null, has the correct username, and has an authToken
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(user.username(), result.username());
+        Assertions.assertNotNull(result.authToken());
     }
 
     @Test
-    @Order(2)
     @DisplayName("Registering an existing username")
     public void RegisterFailure() throws Exception {
+        //Manually add a user to the "database"
         UserData user = new UserData("testUser", "testPassword", "testEmail");
+        userDataAccess.createUser(user);
+
+        //Try to add the same user using registerUser
         Exception exception = Assertions.assertThrows(RedundantDataException.class, () -> {
             userService.registerUser(user);
         });

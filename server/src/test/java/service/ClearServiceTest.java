@@ -31,7 +31,7 @@ public class ClearServiceTest {
         //Add a user, authData, and game to each hashmap stored in memory
         UserData user = new UserData("testUsername", "testPassword", "testEmail");
         AuthData auth = new AuthData("authToken", "testUser");
-        GameData game = new GameData("1234", "black", "white", "name", new ChessGame());
+        GameData game = new GameData(1234, "black", "white", "name", new ChessGame());
         userDataAccess.createUser(user);
         authDataAccess.createAuth(auth);
         gameDataAccess.createGame(game);

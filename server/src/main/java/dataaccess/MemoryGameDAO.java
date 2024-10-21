@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MemoryGameDAO implements GameDAO{
-    private final HashMap<String, GameData> games = new HashMap<>();
+    private final HashMap<Integer, GameData> games = new HashMap<>();
 
     @Override
     public void clear() {
@@ -20,7 +20,7 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public GameData getGame(String gameID) throws Exception {
+    public GameData getGame(Integer gameID) throws Exception {
         if (games.get(gameID) == null) {
             throw new BadRequestException("Error: bad request");
         }
@@ -30,7 +30,7 @@ public class MemoryGameDAO implements GameDAO{
     @Override
     public ArrayList<GameData> listGames() {
         ArrayList<GameData> allGames = new ArrayList<>();
-        for (HashMap.Entry<String, GameData> game : games.entrySet()) {
+        for (HashMap.Entry<Integer, GameData> game : games.entrySet()) {
             allGames.add(game.getValue());
         }
         return allGames;

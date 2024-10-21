@@ -2,5 +2,7 @@ package response;
 
 import model.GameData;
 
-public record ListGamesResponse (GameData[] games){
+import java.util.ArrayList;
+
+public record ListGamesResponse (ArrayList<GameData> games){
 }

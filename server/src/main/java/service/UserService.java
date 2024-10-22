@@ -39,7 +39,7 @@ public class UserService {
     }
 
     public void logoutUser(AuthData auth) throws Exception {
-        if (authDataAccess.getAuth(auth) == null) {
+        if (authDataAccess.getAuth(auth.authToken()) == null) {
             throw new UnauthorizedException("Error: unauthorized");
         }
         authDataAccess.deleteAuth(auth);

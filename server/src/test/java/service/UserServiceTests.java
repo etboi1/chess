@@ -41,7 +41,7 @@ public class UserServiceTests {
 
         //Check also that the data is actually stored
         Assertions.assertEquals(user, userDataAccess.getUser(user.username()));
-        Assertions.assertEquals(result.authToken(), authDataAccess.getAuth(new AuthData(result.authToken(), null)).authToken());
+        Assertions.assertEquals(result.authToken(), authDataAccess.getAuth(result.authToken()).authToken());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class UserServiceTests {
         Assertions.assertNotNull(result.authToken());
 
         Assertions.assertEquals(user, userDataAccess.getUser(user.username()));
-        Assertions.assertEquals(result.authToken(), authDataAccess.getAuth(new AuthData(result.authToken(), null)).authToken());
+        Assertions.assertEquals(result.authToken(), authDataAccess.getAuth(result.authToken()).authToken());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class UserServiceTests {
 
         userService.logoutUser(auth);
 
-        Assertions.assertNull(authDataAccess.getAuth(auth));
+        Assertions.assertNull(authDataAccess.getAuth(auth.authToken()));
     }
 
     @Test

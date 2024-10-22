@@ -18,7 +18,7 @@ public class Server {
     private final GameDAO gameDataAccess = new MemoryGameDAO();
     private final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
     private final UserService userService = new UserService(authDataAccess, userDataAccess);
-    private final GameService gameService = new GameService(gameDataAccess);
+    private final GameService gameService = new GameService(gameDataAccess, authDataAccess);
     private final Gson serializer = new Gson();
 
     public int run(int desiredPort) {
@@ -27,7 +27,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Check for authentication for game endpoints before allowing them to be handled
-        Spark.before("/game", this::authenticate);
+//        Spark.before("/game", this::authenticate);
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::createUser);
@@ -46,21 +46,21 @@ public class Server {
         return Spark.port();
     }
 
-    private void authenticate(Request req, Response res) {
-        String authToken = req.headers("authorization");
-        if (authToken == null || authDataAccess.getAuth(new AuthData(authToken, null)) == null) {
-            Spark.halt(401, serializer.toJson(Map.of("message", "Error: unauthorized")));
-        }
-        Map<String, Object> reqBody;
-        if (req.body() == null || req.body().isEmpty()) {
-            reqBody = new HashMap<>();
-        } else {
-            reqBody = serializer.fromJson(req.body(), Map.class);
-        }
-        AuthData userAuth = authDataAccess.getAuth(new AuthData(authToken, null));
-        reqBody.put("username", userAuth.username());
-        serializer.toJson(reqBody);
-    }
+//    private void authenticate(Request req, Response res) {
+//        String authToken = req.headers("authorization");
+//        if (authToken == null || authDataAccess.getAuth(new AuthData(authToken, null)) == null) {
+//            Spark.halt(401, serializer.toJson(Map.of("message", "Error: unauthorized")));
+//        }
+//        Map<String, Object> reqBody;
+//        if (req.body() == null || req.body().isEmpty()) {
+//            reqBody = new HashMap<>();
+//        } else {
+//            reqBody = serializer.fromJson(req.body(), Map.class);
+//        }
+//        AuthData userAuth = authDataAccess.getAuth(new AuthData(authToken, null));
+//        reqBody.put("username", userAuth.username());
+//        serializer.toJson(reqBody);
+//    }
 
     private String createUser(Request req, Response res) throws Exception {
         UserData newUser = serializer.fromJson(req.body(), UserData.class);
@@ -82,20 +82,23 @@ public class Server {
         return "";
     }
 
-    private Object listGames(Request req, Response res) {
-        var result = gameService.listGames();
+    private Object listGames(Request req, Response res) throws Exception{
+        String authToken = req.headers("authorization");
+        var result = gameService.listGames(authToken);
         return serializer.toJson(result);
     }
 
-    private Object createGame(Request req, Response res) {
+    private Object createGame(Request req, Response res) throws Exception {
+        String authToken = req.headers("authorization");
         CreateGameRequest createRequest = serializer.fromJson(req.body(), CreateGameRequest.class);
-        var result = gameService.createGame(createRequest);
+        var result = gameService.createGame(createRequest, authToken);
         return serializer.toJson(result);
     }
 
     private Object joinGame(Request req, Response res) throws Exception {
+        String authToken = req.headers("authorization");
         JoinGameRequest joinRequest = serializer.fromJson(req.body(), JoinGameRequest.class);
-        gameService.joinGame(joinRequest);
+        gameService.joinGame(joinRequest, authToken);
         res.status(200);
         return "";
     }

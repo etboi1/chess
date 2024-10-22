@@ -40,7 +40,7 @@ public class ClearServiceTest {
         clearService.clearData();
 
         Assertions.assertNull(userDataAccess.getUser("testUsername"));
-        Assertions.assertNull(authDataAccess.getAuth(auth));
+        Assertions.assertNull(authDataAccess.getAuth(auth.authToken()));
         Assertions.assertTrue(gameDataAccess.listGames().isEmpty());
     }
 }

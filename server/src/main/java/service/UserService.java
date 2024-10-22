@@ -9,12 +9,11 @@ import response.LoginRegisterResponse;
 import java.util.Objects;
 import java.util.UUID;
 
-public class UserService {
-    private final AuthDAO authDataAccess;
+public class UserService extends AuthenticationService{
     private final UserDAO userDataAccess;
 
     public UserService(AuthDAO authDataAccess, UserDAO userDataAccess) {
-        this.authDataAccess = authDataAccess;
+        super(authDataAccess);
         this.userDataAccess = userDataAccess;
     }
 
@@ -39,9 +38,7 @@ public class UserService {
     }
 
     public void logoutUser(AuthData auth) throws Exception {
-        if (authDataAccess.getAuth(auth.authToken()) == null) {
-            throw new UnauthorizedException("Error: unauthorized");
-        }
+        super.authenticate(auth.authToken());
         authDataAccess.deleteAuth(auth);
     }
 }

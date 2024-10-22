@@ -9,7 +9,7 @@ import response.LoginRegisterResponse;
 import java.util.Objects;
 import java.util.UUID;
 
-public class UserService extends AuthenticationService{
+public class UserService extends AuthService {
     private final UserDAO userDataAccess;
 
     public UserService(AuthDAO authDataAccess, UserDAO userDataAccess) {

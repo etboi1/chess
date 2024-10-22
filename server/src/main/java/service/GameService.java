@@ -12,7 +12,7 @@ import response.ListGamesResponse;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class GameService extends AuthenticationService {
+public class GameService extends AuthService {
     private final GameDAO gameDataAccess;
 
     public GameService(GameDAO gameDataAccess, AuthDAO authDataAccess) {

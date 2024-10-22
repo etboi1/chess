@@ -3,10 +3,10 @@ package service;
 import dataaccess.AuthDAO;
 import model.AuthData;
 
-public class AuthenticationService {
+public class AuthService {
     public final AuthDAO authDataAccess;
 
-    public AuthenticationService(AuthDAO authDataAccess) {
+    public AuthService(AuthDAO authDataAccess) {
         this.authDataAccess = authDataAccess;
     }
 

@@ -97,7 +97,7 @@ public class GameServiceTests {
 
     @Test
     @DisplayName("Create Game Failure - unauthorized user attempts to create game")
-    public void createFailure() throws Exception {
+    public void createFailure() {
         authDataAccess.createAuth(new AuthData("authToken", "username"));
 
         // Attempt to create a game, but with an auth token that doesn't match

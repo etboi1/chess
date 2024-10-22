@@ -9,7 +9,6 @@ import request.JoinGameRequest;
 import service.*;
 import spark.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class Server {
@@ -25,9 +24,6 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-
-        // Check for authentication for game endpoints before allowing them to be handled
-//        Spark.before("/game", this::authenticate);
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::createUser);
@@ -45,22 +41,6 @@ public class Server {
         Spark.awaitInitialization();
         return Spark.port();
     }
-
-//    private void authenticate(Request req, Response res) {
-//        String authToken = req.headers("authorization");
-//        if (authToken == null || authDataAccess.getAuth(new AuthData(authToken, null)) == null) {
-//            Spark.halt(401, serializer.toJson(Map.of("message", "Error: unauthorized")));
-//        }
-//        Map<String, Object> reqBody;
-//        if (req.body() == null || req.body().isEmpty()) {
-//            reqBody = new HashMap<>();
-//        } else {
-//            reqBody = serializer.fromJson(req.body(), Map.class);
-//        }
-//        AuthData userAuth = authDataAccess.getAuth(new AuthData(authToken, null));
-//        reqBody.put("username", userAuth.username());
-//        serializer.toJson(reqBody);
-//    }
 
     private String createUser(Request req, Response res) throws Exception {
         UserData newUser = serializer.fromJson(req.body(), UserData.class);

@@ -5,6 +5,7 @@ import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import service.*;
 import spark.*;
 
@@ -92,8 +93,11 @@ public class Server {
         return serializer.toJson(result);
     }
 
-    private Object joinGame(Request request, Response response) {
-        return null;
+    private Object joinGame(Request req, Response res) throws Exception {
+        JoinGameRequest joinRequest = serializer.fromJson(req.body(), JoinGameRequest.class);
+        gameService.joinGame(joinRequest);
+        res.status(200);
+        return "";
     }
 
     private Object clearDatabase(Request req, Response res) throws Exception{
@@ -103,14 +107,11 @@ public class Server {
     }
 
     private void exceptionHandler(Exception ex, Request req, Response res) {
-        if (ex instanceof BadRequestException) {
-            res.status(400);
-        } else if (ex instanceof UnauthorizedException) {
-            res.status(401);
-        } else if (ex instanceof RedundantDataException) {
-            res.status(403);
-        } else {
-            res.status(500);
+        switch (ex) {
+            case BadRequestException badRequestException -> res.status(400);
+            case UnauthorizedException unauthorizedException -> res.status(401);
+            case RedundantDataException redundantDataException -> res.status(403);
+            case null, default -> res.status(500);
         }
         res.body(serializer.toJson(Map.of("message", ex.getMessage())));
         ex.printStackTrace(System.out);

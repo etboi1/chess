@@ -37,7 +37,8 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public void joinGame(String gameID, GameData gameUpdate) {
-
+    public void updateGame(Integer gameID, GameData gameUpdate) {
+        games.remove(gameID);
+        games.put(gameID, gameUpdate);
     }
 }

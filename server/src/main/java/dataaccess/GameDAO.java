@@ -9,5 +9,5 @@ public interface GameDAO {
     void createGame(GameData newGame);
     GameData getGame(Integer gameID) throws Exception;
     ArrayList<GameData> listGames();
-    void joinGame(String gameID, GameData gameUpdate);
+    void updateGame(Integer gameID, GameData gameUpdate);
 }

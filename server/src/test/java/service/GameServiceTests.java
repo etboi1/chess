@@ -79,13 +79,24 @@ public class GameServiceTests {
     @DisplayName("Successfully Join a Game")
     public void joinSuccess() throws Exception {
         ChessGame game = new ChessGame();
+
+        // Test Joining as white player
         gameDataAccess.createGame(new GameData(1000, null, "black", "name", game));
 
-        gameService.joinGame(new JoinGameRequest("white", 1000, "testUser"));
+        gameService.joinGame(new JoinGameRequest("WHITE", 1000, "testUser"));
         var updatedGame = gameDataAccess.getGame(1000);
 
         Assertions.assertEquals(new GameData(1000, "testUser", "black", "name", game),
                 updatedGame);
+
+        // Test joining as black player
+        gameDataAccess.createGame(new GameData(1001, null, null, "name", game));
+
+        gameService.joinGame(new JoinGameRequest("BLACK", 1001, "testUser"));
+        var updatedGame2 = gameDataAccess.getGame(1001);
+
+        Assertions.assertEquals(new GameData(1001, null, "testUser", "name", game),
+                updatedGame2);
     }
 
     @Test
@@ -95,8 +106,8 @@ public class GameServiceTests {
         gameDataAccess.createGame(new GameData(1000, "white", "black", "name", game));
 
         Exception ex = Assertions.assertThrows(RedundantDataException.class, () -> {
-            gameService.joinGame(new JoinGameRequest("white", 1000, "testUser"));
+            gameService.joinGame(new JoinGameRequest("WHITE", 1000, "testUser"));
         });
-        Assertions.assertEquals("Error: Already taken", ex.getMessage());
+        Assertions.assertEquals("Error: already taken", ex.getMessage());
     }
 }

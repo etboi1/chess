@@ -29,7 +29,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Normal User Registration")
-    public void RegisterSuccess() throws Exception {
+    public void registerSuccess() throws Exception {
         UserData user = new UserData("testUser", "testPassword", "testEmail");
         var result = userService.registerUser(user);
 
@@ -46,7 +46,7 @@ public class UserServiceTests {
 
     @Test
     @DisplayName("Registering an existing username")
-    public void RegisterFailure() throws Exception {
+    public void registerFailure() throws Exception {
         //Manually add a user to the "database"
         UserData user = new UserData("testUser", "testPassword", "testEmail");
         userDataAccess.createUser(user);

@@ -140,7 +140,8 @@ public class GameServiceTests {
         ChessGame game = new ChessGame();
         gameDataAccess.createGame(new GameData(1000, "white", "black", "name", game));
 
-        Exception ex = Assertions.assertThrows(RedundantDataException.class, () -> gameService.joinGame(new JoinGameRequest("WHITE", 1000), "authToken"));
+        Exception ex = Assertions.assertThrows(RedundantDataException.class, () ->
+                gameService.joinGame(new JoinGameRequest("WHITE", 1000), "authToken"));
         Assertions.assertEquals("Error: already taken", ex.getMessage());
     }
 }

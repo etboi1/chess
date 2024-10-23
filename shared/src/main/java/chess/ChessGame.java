@@ -197,11 +197,15 @@ public class ChessGame {
         if (!isInCheck(teamColor)) {
             return false;
         }
+        return playerHasPossibleMove(teamColor);
+    }
+
+    private boolean playerHasPossibleMove(TeamColor teamColor) {
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition square = new ChessPosition(row, col);
                 ChessPiece piece = gameBoard.getPiece(square);
-                if (isFriendlyPiece(piece, teamColor) && hasPossibleMove(square)) {
+                if (isFriendlyPiece(piece, teamColor) && pieceHasPossibleMove(square)) {
                     return false;
                 }
             }
@@ -213,7 +217,7 @@ public class ChessGame {
         return piece != null && piece.getTeamColor() == teamColor;
     }
 
-    private boolean hasPossibleMove(ChessPosition position) {
+    private boolean pieceHasPossibleMove(ChessPosition position) {
         Collection<ChessMove> possibleMoves = validMoves(position);
         return possibleMoves != null && !possibleMoves.isEmpty();
     }
@@ -231,16 +235,7 @@ public class ChessGame {
         if (isInCheckmate(teamColor)) {
             return false;
         }
-        for (int row = 1; row <= 8; row++) {
-            for (int col = 1; col <= 8; col++) {
-                ChessPosition square = new ChessPosition(row, col);
-                ChessPiece piece = gameBoard.getPiece(square);
-                if (isFriendlyPiece(piece, teamColor) && hasPossibleMove(square)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return playerHasPossibleMove(teamColor);
     }
 
     /**

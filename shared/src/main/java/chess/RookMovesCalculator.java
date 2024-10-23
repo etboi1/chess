@@ -4,12 +4,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-public class RookMovesCalculator implements PieceMovesCalculator{
+public class RookMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<>();
 
-        int[] directionX = {-1, 0, 0 , 1}; //Rooks can move in a straight line in any horizontal/vertical direction
+        int[] directionX = {-1, 0, 0, 1}; //Rooks can move in a straight line in any horizontal/vertical direction
         int[] directionY = {0, -1, 1, 0};
 
         for (int i = 0; i < directionX.length; i++) {
@@ -35,8 +35,7 @@ public class RookMovesCalculator implements PieceMovesCalculator{
                     }
                     //If there was a piece, whoever it belonged to, we can't move past it
                     break;
-                }
-                else {
+                } else {
                     //If the square is empty, we add it and keep going
                     moves.add(new ChessMove(position, newPosition, null));
                 }

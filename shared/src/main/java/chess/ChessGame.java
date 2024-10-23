@@ -45,8 +45,12 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessGame chessGame = (ChessGame) o;
         return Objects.equals(gameBoard, chessGame.gameBoard) && currentTeam == chessGame.currentTeam;
     }
@@ -119,7 +123,7 @@ public class ChessGame {
         Collection<ChessMove> allValid = validMoves(startPosition);
 
         if (piece != null && currentTeam == piece.getTeamColor()) {
-        //Only make the move if it's a valid move
+            //Only make the move if it's a valid move
             if (allValid.contains(move)) {
                 //Check for promotion
                 if (move.getPromotionPiece() != null) {
@@ -148,13 +152,14 @@ public class ChessGame {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition square = new ChessPosition(row, col);
                 ChessPiece piece = gameBoard.getPiece(square);
-                if (piece != null && piece.getTeamColor() == teamColor && 
+                if (piece != null && piece.getTeamColor() == teamColor &&
                         piece.getPieceType() == ChessPiece.PieceType.KING) {
                     currentKing = square;
                 }
             }
-        };
-        
+        }
+        ;
+
         //Loop through each square and see if any of the opposite team can capture current king
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
@@ -170,7 +175,8 @@ public class ChessGame {
                     }
                 }
             }
-        };
+        }
+        ;
         return Boolean.FALSE;
     }
 

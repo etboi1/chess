@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-public class KingMovesCalculator implements PieceMovesCalculator{
+public class KingMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<>();
@@ -19,7 +19,7 @@ public class KingMovesCalculator implements PieceMovesCalculator{
             col += directionX[i];
             row += directionY[i];
 
-            if (1 <= row && row <= 8 && 1 <= col && col <= 8 ) {
+            if (1 <= row && row <= 8 && 1 <= col && col <= 8) {
                 ChessPosition newPosition = new ChessPosition(row, col);
                 ChessPiece checkSquare = board.getPiece(newPosition);
 
@@ -28,8 +28,7 @@ public class KingMovesCalculator implements PieceMovesCalculator{
                         //Can capture enemy piece
                         moves.add(new ChessMove(position, newPosition, null));
                     }
-                }
-                else {
+                } else {
                     moves.add(new ChessMove(position, newPosition, null));
                 }
             }

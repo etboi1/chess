@@ -35,8 +35,7 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
                     }
                     //If there was a piece, whoever it belonged to, we can't move past it
                     break;
-                }
-                else {
+                } else {
                     //If the square is empty, we add it and keep going
                     moves.add(new ChessMove(position, newPosition, null));
                 }

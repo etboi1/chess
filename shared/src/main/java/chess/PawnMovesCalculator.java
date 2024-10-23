@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-public class PawnMovesCalculator implements PieceMovesCalculator{
+public class PawnMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<>();
@@ -17,8 +17,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         if (pawnColor == ChessGame.TeamColor.WHITE) {
             possibleMoves[0] = 1;
             possibleMoves[1] = 2;
-        }
-        else {
+        } else {
             possibleMoves[0] = -1;
             possibleMoves[1] = -2;
         }

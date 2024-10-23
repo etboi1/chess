@@ -4,13 +4,24 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-public class KingMovesCalculator implements PieceMovesCalculator {
+public class MovesOnceCalculator implements PieceMovesCalculator {
+
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<>();
 
-        int[] directionX = {-1, -1, -1, 0, 0, 1, 1, 1}; //A king can move diagonally up/down left, up/down, & diagonally up/down right.
-        int[] directionY = {-1, 0, 1, -1, 1, -1, 0, 1};
+        int[] directionX = new int[0];
+        int[] directionY = new int[0];
+        switch (piece.getPieceType()) {
+            case ChessPiece.PieceType.KING -> {
+                directionX = new int[]{-1, -1, -1, 0, 0, 1, 1, 1};
+                directionY = new int[]{-1, 0, 1, -1, 1, -1, 0, 1};
+            }
+            case ChessPiece.PieceType.KNIGHT -> {
+                directionX = new int[]{-2, -2, -1, -1, 1, 1, 2, 2};
+                directionY = new int[]{-1, 1, -2, 2, -2, 2, -1, 1};
+            }
+        }
 
         for (int i = 0; i < directionX.length; i++) {
             int col = position.getColumn();

@@ -74,12 +74,9 @@ public class ChessPiece {
         var myPiece = board.getPiece(myPosition);
 
         return switch (myPiece.getPieceType()) {
-            case PieceType.BISHOP -> new BishopMovesCalculator().pieceMoves(board, myPosition, myPiece);
-            case PieceType.KING -> new KingMovesCalculator().pieceMoves(board, myPosition, myPiece);
-            case PieceType.KNIGHT -> new KnightMovesCalculator().pieceMoves(board, myPosition, myPiece);
+            case PieceType.BISHOP, ROOK, QUEEN -> new MovesUntilBlockedCalculator().pieceMoves(board, myPosition, myPiece);
+            case PieceType.KING, KNIGHT -> new MovesOnceCalculator().pieceMoves(board, myPosition, myPiece);
             case PieceType.PAWN -> new PawnMovesCalculator().pieceMoves(board, myPosition, myPiece);
-            case PieceType.QUEEN -> new QueenMovesCalculator().pieceMoves(board, myPosition, myPiece);
-            case PieceType.ROOK -> new RookMovesCalculator().pieceMoves(board, myPosition, myPiece);
         };
     }
 

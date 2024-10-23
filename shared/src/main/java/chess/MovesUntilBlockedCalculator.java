@@ -4,13 +4,27 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-public class QueenMovesCalculator implements PieceMovesCalculator {
+public class MovesUntilBlockedCalculator implements PieceMovesCalculator {
+
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<>();
-
-        int[] directionX = {-1, -1, -1, 0, 0, 1, 1, 1}; //Queens can move in a straight line in any direction
-        int[] directionY = {-1, 0, 1, -1, 1, -1, 0, 1};
+        int[] directionX = new int[0];
+        int[] directionY = new int[0];
+        switch (piece.getPieceType()) {
+            case ChessPiece.PieceType.BISHOP -> {
+                directionX = new int[]{-1, 1, -1, 1};
+                directionY = new int[]{-1, -1, 1, 1};
+            }
+            case ChessPiece.PieceType.ROOK -> {
+                directionX = new int[]{-1, 0, 0, 1};
+                directionY = new int[]{0, -1, 1, 0};
+            }
+            case ChessPiece.PieceType.QUEEN -> {
+                directionX = new int[]{-1, -1, -1, 0, 0, 1, 1, 1};
+                directionY = new int[]{-1, 0, 1, -1, 1, -1, 0, 1};
+            }
+        }
 
         for (int i = 0; i < directionX.length; i++) {
             int col = position.getColumn();

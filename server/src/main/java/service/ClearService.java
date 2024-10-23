@@ -16,7 +16,7 @@ public class ClearService {
         this.gameDataAccess = gameDataAccess;
     }
 
-    public void clearData () throws DataAccessException {
+    public void clearData() {
         userDataAccess.clear();
         authDataAccess.clear();
         gameDataAccess.clear();

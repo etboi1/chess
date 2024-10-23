@@ -6,7 +6,7 @@ import service.BadRequestException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MemoryGameDAO implements GameDAO{
+public class MemoryGameDAO implements GameDAO {
     private final HashMap<Integer, GameData> games = new HashMap<>();
 
     @Override

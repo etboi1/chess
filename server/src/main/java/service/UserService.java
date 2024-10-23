@@ -24,7 +24,7 @@ public class UserService extends AuthService {
             throw new BadRequestException("Error: Bad Request");
         }
         userDataAccess.createUser(newUser);
-        var authData =  authDataAccess.createAuth(new AuthData(UUID.randomUUID().toString(), newUser.username()));
+        var authData = authDataAccess.createAuth(new AuthData(UUID.randomUUID().toString(), newUser.username()));
         return new LoginRegisterResponse(authData.authToken(), authData.username());
     }
 

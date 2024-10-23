@@ -48,13 +48,13 @@ public class Server {
         return serializer.toJson(result);
     }
 
-    private Object loginUser(Request req, Response res) throws Exception{
+    private Object loginUser(Request req, Response res) throws Exception {
         UserData user = serializer.fromJson(req.body(), UserData.class);
         var result = userService.loginUser(user);
         return serializer.toJson(result);
     }
 
-    private Object logoutUser(Request req, Response res) throws Exception{
+    private Object logoutUser(Request req, Response res) throws Exception {
         String authToken = req.headers("authorization");
         AuthData auth = new AuthData(authToken, null);
         userService.logoutUser(auth);
@@ -62,7 +62,7 @@ public class Server {
         return "";
     }
 
-    private Object listGames(Request req, Response res) throws Exception{
+    private Object listGames(Request req, Response res) throws Exception {
         String authToken = req.headers("authorization");
         var result = gameService.listGames(authToken);
         return serializer.toJson(result);
@@ -83,7 +83,7 @@ public class Server {
         return "";
     }
 
-    private Object clearDatabase(Request req, Response res) throws Exception{
+    private Object clearDatabase(Request req, Response res) throws Exception {
         clearService.clearData();
         res.status(200);
         return "";

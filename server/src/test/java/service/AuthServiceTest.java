@@ -37,7 +37,7 @@ public class AuthServiceTest {
 
     @Test
     @DisplayName("Authentication Failure - user has incorrect authToken")
-    public void authFailure(){
+    public void authFailure() {
         String username = "realUser";
         String authToken = "goodAuth";
         authDataAccess.createAuth(new AuthData(authToken, username));

@@ -74,7 +74,7 @@ public class GameServiceTests {
 
     @Test
     @DisplayName("Successfully Create Game")
-    public void createSuccess() throws Exception{
+    public void createSuccess() throws Exception {
         authDataAccess.createAuth(new AuthData("authToken", "username"));
 
         CreateGameRequest createRequest = new CreateGameRequest("gameName");

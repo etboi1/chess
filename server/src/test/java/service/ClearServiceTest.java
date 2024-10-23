@@ -27,7 +27,7 @@ public class ClearServiceTest {
     }
 
     @Test
-    public void clearData() throws Exception{
+    public void clearData() throws Exception {
         //Add a user, authData, and game to each hashmap stored in memory
         UserData user = new UserData("testUsername", "testPassword", "testEmail");
         AuthData auth = new AuthData("authToken", "testUser");

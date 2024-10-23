@@ -9,6 +9,7 @@ public class MovesUntilBlockedCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<>();
+
         int[] directionX = new int[0];
         int[] directionY = new int[0];
         switch (piece.getPieceType()) {

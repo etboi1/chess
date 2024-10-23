@@ -194,19 +194,19 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (isInCheck(teamColor)) {
-            for (int row = 1; row <= 8; row++) {
-                for (int col = 1; col <= 8; col++) {
-                    ChessPosition square = new ChessPosition(row, col);
-                    ChessPiece piece = gameBoard.getPiece(square);
-                    if (isFriendlyPiece(piece, teamColor) && hasPossibleMove(square)) {
-                        return false;
-                    }
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition square = new ChessPosition(row, col);
+                ChessPiece piece = gameBoard.getPiece(square);
+                if (isFriendlyPiece(piece, teamColor) && hasPossibleMove(square)) {
+                    return false;
                 }
             }
-            return true;
         }
-        return false;
+        return true;
     }
 
     private boolean isFriendlyPiece(ChessPiece piece, TeamColor teamColor) {
@@ -228,19 +228,19 @@ public class ChessGame {
     public boolean isInStalemate(TeamColor teamColor) {
         //Should be the exact same as checkmate, except we just don't check if the team is in check at the beginning
         //We'll include a check to make sure the team isn't in checkmate
-        if (!isInCheckmate(teamColor)) {
-            for (int row = 1; row <= 8; row++) {
-                for (int col = 1; col <= 8; col++) {
-                    ChessPosition square = new ChessPosition(row, col);
-                    ChessPiece piece = gameBoard.getPiece(square);
-                    if (isFriendlyPiece(piece, teamColor) && hasPossibleMove(square)) {
-                        return false;
-                    }
+        if (isInCheckmate(teamColor)) {
+            return false;
+        }
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition square = new ChessPosition(row, col);
+                ChessPiece piece = gameBoard.getPiece(square);
+                if (isFriendlyPiece(piece, teamColor) && hasPossibleMove(square)) {
+                    return false;
                 }
             }
-            return true;
         }
-        return false;
+        return true;
     }
 
     /**

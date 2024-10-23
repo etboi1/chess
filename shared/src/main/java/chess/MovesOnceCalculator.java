@@ -10,25 +10,25 @@ public class MovesOnceCalculator implements PieceMovesCalculator {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position, ChessPiece piece) {
         Collection<ChessMove> moves = new HashSet<>();
 
-        int[] X = new int[0];
-        int[] Y = new int[0];
+        int[] xDimension = new int[0];
+        int[] yDimension = new int[0];
         switch (piece.getPieceType()) {
             case ChessPiece.PieceType.KING -> {
-                X = new int[]{-1, -1, -1, 0, 0, 1, 1, 1};
-                Y = new int[]{-1, 0, 1, -1, 1, -1, 0, 1};
+                xDimension = new int[]{-1, -1, -1, 0, 0, 1, 1, 1};
+                yDimension = new int[]{-1, 0, 1, -1, 1, -1, 0, 1};
             }
             case ChessPiece.PieceType.KNIGHT -> {
-                X = new int[]{-2, -2, -1, -1, 1, 1, 2, 2};
-                Y = new int[]{-1, 1, -2, 2, -2, 2, -1, 1};
+                xDimension = new int[]{-2, -2, -1, -1, 1, 1, 2, 2};
+                yDimension = new int[]{-1, 1, -2, 2, -2, 2, -1, 1};
             }
         }
 
-        for (int i = 0; i < X.length; i++) {
+        for (int i = 0; i < xDimension.length; i++) {
             int col = position.getColumn();
             int row = position.getRow();
 
-            col += X[i];
-            row += Y[i];
+            col += xDimension[i];
+            row += yDimension[i];
 
             if (1 <= row && row <= 8 && 1 <= col && col <= 8) {
                 ChessPosition newPosition = new ChessPosition(row, col);

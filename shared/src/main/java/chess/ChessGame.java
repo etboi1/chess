@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -165,19 +164,27 @@ public class ChessGame {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition square = new ChessPosition(row, col);
                 ChessPiece piece = gameBoard.getPiece(square);
-                if (piece != null && piece.getTeamColor() != teamColor) {
-                    //Check if each enemy piece can capture king
-                    Collection<ChessMove> possibleMoves = piece.pieceMoves(gameBoard, square);
-                    for (ChessMove move : possibleMoves) {
-                        if (move.getEndPosition().equals(currentKing)) {
-                            return Boolean.TRUE;
-                        }
-                    }
+                if (isEnemyPiece(piece, teamColor) && canCaptureKing(piece, square, currentKing)) {
+                    return true;
                 }
             }
         }
         ;
         return Boolean.FALSE;
+    }
+
+    private boolean isEnemyPiece(ChessPiece piece, TeamColor pieceColor) {
+        return piece != null && piece.getTeamColor() != pieceColor;
+    }
+
+    private boolean canCaptureKing(ChessPiece piece, ChessPosition position, ChessPosition currentKing) {
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(gameBoard, position);
+        for (ChessMove move : possibleMoves) {
+            if (move.getEndPosition().equals(currentKing)) {
+                return Boolean.TRUE;
+            }
+        }
+        return false;
     }
 
     /**
@@ -192,17 +199,23 @@ public class ChessGame {
                 for (int col = 1; col <= 8; col++) {
                     ChessPosition square = new ChessPosition(row, col);
                     ChessPiece piece = gameBoard.getPiece(square);
-                    if (piece != null && piece.getTeamColor() == teamColor) {
-                        Collection<ChessMove> possibleMoves = validMoves(square);
-                        if (possibleMoves != null && !possibleMoves.isEmpty()) {
-                            return false;
-                        }
+                    if (isFriendlyPiece(piece, teamColor) && hasPossibleMove(square)) {
+                        return false;
                     }
                 }
             }
             return true;
         }
         return false;
+    }
+
+    private boolean isFriendlyPiece(ChessPiece piece, TeamColor teamColor) {
+        return piece != null && piece.getTeamColor() == teamColor;
+    }
+
+    private boolean hasPossibleMove(ChessPosition position) {
+        Collection<ChessMove> possibleMoves = validMoves(position);
+        return possibleMoves != null && !possibleMoves.isEmpty();
     }
 
     /**
@@ -220,11 +233,8 @@ public class ChessGame {
                 for (int col = 1; col <= 8; col++) {
                     ChessPosition square = new ChessPosition(row, col);
                     ChessPiece piece = gameBoard.getPiece(square);
-                    if (piece != null && piece.getTeamColor() == teamColor) {
-                        Collection<ChessMove> possibleMoves = validMoves(square);
-                        if (possibleMoves != null && !possibleMoves.isEmpty()) {
-                            return false;
-                        }
+                    if (isFriendlyPiece(piece, teamColor) && hasPossibleMove(square)) {
+                        return false;
                     }
                 }
             }

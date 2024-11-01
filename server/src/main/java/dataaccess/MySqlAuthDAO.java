@@ -2,7 +2,11 @@ package dataaccess;
 
 import model.AuthData;
 
-public class MySqlAuthDAO implements AuthDAO{
+public class MySqlAuthDAO extends BaseMySqlDAO implements AuthDAO{
+    public MySqlAuthDAO() throws DataAccessException {
+        super();
+    }
+
     @Override
     public void clear() {
 

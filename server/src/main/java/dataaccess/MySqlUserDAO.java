@@ -2,7 +2,11 @@ package dataaccess;
 
 import model.UserData;
 
-public class MySqlUserDAO implements UserDAO {
+public class MySqlUserDAO extends BaseMySqlDAO implements UserDAO {
+    public MySqlUserDAO() throws DataAccessException {
+        super();
+    }
+
     @Override
     public void clear() {
 

@@ -12,13 +12,23 @@ import spark.*;
 import java.util.Map;
 
 public class Server {
-    private final UserDAO userDataAccess = new MemoryUserDAO();
-    private final AuthDAO authDataAccess = new MemoryAuthDAO();
-    private final GameDAO gameDataAccess = new MemoryGameDAO();
-    private final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
-    private final UserService userService = new UserService(authDataAccess, userDataAccess);
-    private final GameService gameService = new GameService(gameDataAccess, authDataAccess);
-    private final Gson serializer = new Gson();
+    UserDAO userDataAccess;
+    AuthDAO authDataAccess;
+    GameDAO gameDataAccess;
+
+    {
+        try {
+            userDataAccess = new MySqlUserDAO();
+            authDataAccess = new MySqlAuthDAO();
+            gameDataAccess = new MySqlGameDAO();
+        } catch (DataAccessException ignored) {
+            
+        }
+    }
+    final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
+    final UserService userService = new UserService(authDataAccess, userDataAccess);
+    final GameService gameService = new GameService(gameDataAccess, authDataAccess);
+    final Gson serializer = new Gson();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);

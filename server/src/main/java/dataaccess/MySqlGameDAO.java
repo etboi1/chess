@@ -4,7 +4,11 @@ import model.GameData;
 
 import java.util.ArrayList;
 
-public class MySqlGameDAO implements GameDAO {
+public class MySqlGameDAO extends BaseMySqlDAO implements GameDAO {
+    public MySqlGameDAO() throws DataAccessException {
+        super();
+    }
+
     @Override
     public void clear() {
 

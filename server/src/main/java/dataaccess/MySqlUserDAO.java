@@ -33,12 +33,14 @@ public class MySqlUserDAO extends BaseMySqlDAO implements UserDAO {
     @Override
     public UserData getUser(String username) throws DataAccessException {
         var statement = "SELECT username, userData FROM users WHERE username=?";
-        try {
-            Object userData = super.performQuery(statement, this::readUser, username);
-            return (UserData) userData;
-        } catch (DataAccessException e) {
+        try (ResultSet rs = performQuery(statement, username)){
+            if (rs.next()) {
+                return readUser(rs);
+            }
+        } catch (DataAccessException | SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
+        return null;
     }
 
     public UserData readUser(ResultSet rs) {

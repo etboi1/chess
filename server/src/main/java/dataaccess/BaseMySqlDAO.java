@@ -33,16 +33,12 @@ public class BaseMySqlDAO {
         }
     }
 
-    protected Object performQuery(String statement, Function<ResultSet, Object> reader, Object... params) throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
+    protected ResultSet performQuery(String statement, Object... params) throws DataAccessException {
+        try {
+            Connection conn = DatabaseManager.getConnection();
+            PreparedStatement ps = conn.prepareStatement(statement);
             setParameters(ps, params);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return reader.apply(rs);
-                }
-                return null;
-            }
+            return ps.executeQuery();
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }

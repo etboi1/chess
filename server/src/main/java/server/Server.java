@@ -21,8 +21,8 @@ public class Server {
             userDataAccess = new MySqlUserDAO();
             authDataAccess = new MySqlAuthDAO();
             gameDataAccess = new MySqlGameDAO();
-        } catch (DataAccessException ignored) {
-            //I have no clue what they want us to do with this
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
     final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);

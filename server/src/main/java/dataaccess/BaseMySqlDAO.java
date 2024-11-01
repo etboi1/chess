@@ -78,16 +78,14 @@ public class BaseMySqlDAO {
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                     """,
                     """
-                    CREATE TABLE IF NOT EXISTS game (
+                    CREATE TABLE IF NOT EXISTS games (
                       `gameID` int NOT NULL AUTO_INCREMENT,
                       `whiteUsername` varchar(256) DEFAULT NULL,
                       `blackUsername` varchar(256) DEFAULT NULL,
                       `gameName` varchar(256) NOT NULL,
                       `game` JSON NOT NULL,
                       `gameData` JSON NOT NULL,
-                      PRIMARY KEY (`gameID`),
-                      FOREIGN KEY (`whiteUsername`) REFERENCES users(username),
-                      FOREIGN KEY (`blackUsername`) REFERENCES users(username)
+                      PRIMARY KEY (`gameID`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                     """,
                     """
@@ -96,7 +94,6 @@ public class BaseMySqlDAO {
                       `username` varchar(256) NOT NULL,
                       `authData` JSON NOT NULL,
                       PRIMARY KEY (`authToken`),
-                      FOREIGN KEY (`username`) REFERENCES users(username),
                       INDEX (`username`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                     """

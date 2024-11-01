@@ -2,6 +2,7 @@ package dataaccess;
 
 import com.google.gson.Gson;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,16 +13,18 @@ public class MySqlUserDAO extends BaseMySqlDAO implements UserDAO {
     }
 
     @Override
-    public void clear() {
-
+    public void clear() throws DataAccessException {
+        var statement = "TRUNCATE users";
+        super.performUpdate(statement);
     }
 
     @Override
     public void createUser(UserData userData) throws DataAccessException {
         var statement = "INSERT INTO users (username, password, email, userData) VALUES (?, ?, ?, ?)";
         var json = new Gson().toJson(userData);
+        String hashedPassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
         try {
-            super.performUpdate(statement, userData.username(), userData.password(), userData.email(), json);
+            super.performUpdate(statement, userData.username(), hashedPassword, userData.email(), json);
         } catch (DataAccessException e) {
             throw new DataAccessException(e.getMessage());
         }

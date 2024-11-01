@@ -10,8 +10,9 @@ public class MySqlGameDAO extends BaseMySqlDAO implements GameDAO {
     }
 
     @Override
-    public void clear() {
-
+    public void clear() throws DataAccessException {
+        var statement = "TRUNCATE games";
+        super.performUpdate(statement);
     }
 
     @Override

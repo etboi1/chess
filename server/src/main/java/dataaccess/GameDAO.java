@@ -5,7 +5,7 @@ import model.GameData;
 import java.util.ArrayList;
 
 public interface GameDAO {
-    void clear();
+    void clear() throws DataAccessException;
 
     void createGame(GameData newGame);
 

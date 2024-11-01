@@ -9,8 +9,9 @@ public class MySqlAuthDAO extends BaseMySqlDAO implements AuthDAO{
     }
 
     @Override
-    public void clear() {
-
+    public void clear() throws DataAccessException {
+        var statement = "TRUNCATE auth";
+        super.performUpdate(statement);
     }
 
     @Override

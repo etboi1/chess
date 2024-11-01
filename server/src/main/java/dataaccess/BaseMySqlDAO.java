@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 
 import java.sql.*;
+import java.util.function.Function;
 
 import static java.sql.Types.NULL;
 
@@ -32,11 +33,16 @@ public class BaseMySqlDAO {
         }
     }
 
-    protected ResultSet performQuery(String statement, Object... params) throws DataAccessException {
+    protected Object performQuery(String statement, Function<ResultSet, Object> reader, Object... params) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
             setParameters(ps, params);
-            return ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return reader.apply(rs);
+                }
+                return null;
+            }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
@@ -67,6 +73,7 @@ public class BaseMySqlDAO {
                       `username` varchar(256) NOT NULL,
                       `password` varchar(256) NOT NULL,
                       `email` varchar(256) NOT NULL,
+                      `userData` JSON NOT NULL,
                       PRIMARY KEY (`username`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                     """,
@@ -77,6 +84,7 @@ public class BaseMySqlDAO {
                       `blackUsername` varchar(256) DEFAULT NULL,
                       `gameName` varchar(256) NOT NULL,
                       `game` JSON NOT NULL,
+                      `gameData` JSON NOT NULL,
                       PRIMARY KEY (`gameID`),
                       FOREIGN KEY (`whiteUsername`) REFERENCES users(username),
                       FOREIGN KEY (`blackUsername`) REFERENCES users(username)
@@ -86,6 +94,7 @@ public class BaseMySqlDAO {
                     CREATE TABLE IF NOT EXISTS auth (
                       `authToken` varchar(256) NOT NULL,
                       `username` varchar(256) NOT NULL,
+                      `authData` JSON NOT NULL,
                       PRIMARY KEY (`authToken`),
                       FOREIGN KEY (`username`) REFERENCES users(username),
                       INDEX (`username`)

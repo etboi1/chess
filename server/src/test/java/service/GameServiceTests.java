@@ -58,7 +58,7 @@ public class GameServiceTests {
 
     @Test
     @DisplayName("List Games Failure - Unauthenticated User")
-    public void listFailure() {
+    public void listFailure() throws DataAccessException {
         // Add some games to the database
         ChessGame game = new ChessGame();
         GameData game1 = new GameData(1000, "white", "black", "00", game);
@@ -97,7 +97,7 @@ public class GameServiceTests {
 
     @Test
     @DisplayName("Create Game Failure - unauthorized user attempts to create game")
-    public void createFailure() {
+    public void createFailure() throws DataAccessException {
         authDataAccess.createAuth(new AuthData("authToken", "username"));
 
         // Attempt to create a game, but with an auth token that doesn't match
@@ -134,7 +134,7 @@ public class GameServiceTests {
 
     @Test
     @DisplayName("Attempt to join a full game")
-    public void joinFailure() {
+    public void joinFailure() throws DataAccessException {
         authDataAccess.createAuth(new AuthData("authToken", "username"));
 
         ChessGame game = new ChessGame();

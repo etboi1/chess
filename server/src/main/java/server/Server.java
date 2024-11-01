@@ -22,7 +22,7 @@ public class Server {
             authDataAccess = new MySqlAuthDAO();
             gameDataAccess = new MySqlGameDAO();
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
     final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);

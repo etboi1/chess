@@ -1,5 +1,6 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import model.AuthData;
 
 public class MySqlAuthDAO extends BaseMySqlDAO implements AuthDAO{
@@ -13,8 +14,11 @@ public class MySqlAuthDAO extends BaseMySqlDAO implements AuthDAO{
     }
 
     @Override
-    public AuthData createAuth(AuthData authData) {
-        return null;
+    public AuthData createAuth(AuthData authData) throws DataAccessException {
+        var statement = "INSERT INTO auth (authToken, username, authData) VALUES (?, ?, ?)";
+        var json = new Gson().toJson(authData);
+        super.performUpdate(statement, authData.authToken(), authData.username(), json);
+        return authData;
     }
 
     @Override

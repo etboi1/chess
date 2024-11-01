@@ -22,7 +22,7 @@ public class Server {
             authDataAccess = new MySqlAuthDAO();
             gameDataAccess = new MySqlGameDAO();
         } catch (DataAccessException ignored) {
-            
+            //I have no clue what they want us to do with this
         }
     }
     final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);

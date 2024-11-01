@@ -19,18 +19,19 @@ public class MySqlAuthDAO extends BaseMySqlDAO implements AuthDAO{
 
     @Override
     public AuthData createAuth(AuthData authData) throws DataAccessException {
-        var statement = "INSERT INTO auth (authToken, username, authData) VALUES (?, ?, ?)";
-        var json = new Gson().toJson(authData);
-        super.performUpdate(statement, authData.authToken(), authData.username(), json);
+        var statement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
+        super.performUpdate(statement, authData.authToken(), authData.username());
         return authData;
     }
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
-        var statement = "SELECT authToken, authData FROM auth where authToken=?";
+        var statement = "SELECT authToken, username FROM auth where authToken=?";
         try (ResultSet rs = performQuery(statement, authToken)) {
             if (rs.next()) {
-                return reader(rs, "authData", AuthData.class);
+                var storedAuthToken = rs.getString("authToken");
+                var storedUsername = rs.getString("username");
+                return new AuthData(storedAuthToken, storedUsername);
             }
         } catch (DataAccessException | SQLException e) {
             throw new DataAccessException(e.getMessage());

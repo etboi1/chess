@@ -3,6 +3,9 @@ package dataaccess;
 import com.google.gson.Gson;
 import model.AuthData;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class MySqlAuthDAO extends BaseMySqlDAO implements AuthDAO{
     public MySqlAuthDAO() throws DataAccessException {
         super();
@@ -23,12 +26,21 @@ public class MySqlAuthDAO extends BaseMySqlDAO implements AuthDAO{
     }
 
     @Override
-    public AuthData getAuth(String authToken) {
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        var statement = "SELECT authToken, authData FROM auth where authToken=?";
+        try (ResultSet rs = performQuery(statement, authToken)) {
+            if (rs.next()) {
+                return reader(rs, "authData", AuthData.class);
+            }
+        } catch (DataAccessException | SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
         return null;
     }
 
     @Override
-    public void deleteAuth(AuthData authData) {
-
+    public void deleteAuth(AuthData authData) throws DataAccessException {
+        var statement = "DELETE FROM auth WHERE authToken=?";
+        performUpdate(statement, authData.authToken());
     }
 }

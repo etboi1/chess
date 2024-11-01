@@ -4,6 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import response.LoginRegisterResponse;
 
 import java.util.Objects;
@@ -29,7 +30,8 @@ public class UserService extends AuthService {
     }
 
     public LoginRegisterResponse loginUser(UserData user) throws Exception {
-        if (userDataAccess.getUser(user.username()) == null || !Objects.equals(userDataAccess.getUser(user.username()).password(), user.password())) {
+        UserData storedUser = userDataAccess.getUser(user.username());
+        if (storedUser == null || !BCrypt.checkpw(user.password(), storedUser.password())) {
             throw new UnauthorizedException("Error: unauthorized");
         }
         AuthData authData = new AuthData(UUID.randomUUID().toString(), user.username());

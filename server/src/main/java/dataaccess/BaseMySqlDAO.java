@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import model.UserData;
 
 import java.sql.*;
 import java.util.function.Function;
@@ -44,6 +45,16 @@ public class BaseMySqlDAO {
         }
     }
 
+    protected <T> T reader(ResultSet rs, String colName, Class<T> classType) throws DataAccessException {
+        String json;
+        try {
+            json = rs.getString("userData");
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+        return new Gson().fromJson(json, classType);
+    }
+
     protected void setParameters(PreparedStatement ps, Object... params) throws SQLException {
         for (var i = 0; i < params.length; i++) {
             var param = params[i];
@@ -69,7 +80,6 @@ public class BaseMySqlDAO {
                       `username` varchar(256) NOT NULL,
                       `password` varchar(256) NOT NULL,
                       `email` varchar(256) NOT NULL,
-                      `userData` JSON NOT NULL,
                       PRIMARY KEY (`username`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                     """,

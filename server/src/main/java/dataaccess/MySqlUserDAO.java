@@ -20,11 +20,10 @@ public class MySqlUserDAO extends BaseMySqlDAO implements UserDAO {
 
     @Override
     public void createUser(UserData userData) throws DataAccessException {
-        var statement = "INSERT INTO users (username, password, email, userData) VALUES (?, ?, ?, ?)";
-        var json = new Gson().toJson(userData);
+        var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
         String hashedPassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
         try {
-            super.performUpdate(statement, userData.username(), hashedPassword, userData.email(), json);
+            super.performUpdate(statement, userData.username(), hashedPassword, userData.email());
         } catch (DataAccessException e) {
             throw new DataAccessException(e.getMessage());
         }
@@ -32,24 +31,17 @@ public class MySqlUserDAO extends BaseMySqlDAO implements UserDAO {
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        var statement = "SELECT username, userData FROM users WHERE username=?";
+        var statement = "SELECT username, password, email FROM users WHERE username=?";
         try (ResultSet rs = performQuery(statement, username)){
             if (rs.next()) {
-                return readUser(rs);
+                var storedUsername = rs.getString("username");
+                var storedPassword = rs.getString("password");
+                var storedEmail = rs.getString("email");
+                return new UserData(storedUsername, storedPassword, storedEmail);
             }
         } catch (DataAccessException | SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
         return null;
-    }
-
-    public UserData readUser(ResultSet rs) {
-        String json;
-        try {
-            json = rs.getString("userData");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return new Gson().fromJson(json, UserData.class);
     }
 }

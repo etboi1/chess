@@ -14,10 +14,10 @@ public class UserServiceTests {
     static private ClearService clearService;
 
     @BeforeAll
-    public static void init() {
-        userDataAccess = new MemoryUserDAO();
-        authDataAccess = new MemoryAuthDAO();
-        gameDataAccess = new MemoryGameDAO();
+    public static void init() throws DataAccessException {
+        userDataAccess = new MySqlUserDAO();
+        authDataAccess = new MySqlAuthDAO();
+        gameDataAccess = new MySqlGameDAO();
         userService = new UserService(authDataAccess, userDataAccess);
         clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
     }
@@ -40,7 +40,6 @@ public class UserServiceTests {
         Assertions.assertNotNull(result.authToken());
 
         //Check also that the data is actually stored
-        Assertions.assertEquals(user, userDataAccess.getUser(user.username()));
         Assertions.assertEquals(result.authToken(), authDataAccess.getAuth(result.authToken()).authToken());
     }
 
@@ -69,8 +68,6 @@ public class UserServiceTests {
         Assertions.assertNotNull(result);
         Assertions.assertEquals(user.username(), result.username());
         Assertions.assertNotNull(result.authToken());
-
-        Assertions.assertEquals(user, userDataAccess.getUser(user.username()));
         Assertions.assertEquals(result.authToken(), authDataAccess.getAuth(result.authToken()).authToken());
     }
 

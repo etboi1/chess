@@ -7,11 +7,11 @@ import java.util.ArrayList;
 public interface GameDAO {
     void clear() throws DataAccessException;
 
-    void createGame(GameData newGame);
+    int createGame(GameData newGame) throws Exception;
 
     GameData getGame(Integer gameID) throws Exception;
 
-    ArrayList<GameData> listGames();
+    ArrayList<GameData> listGames() throws DataAccessException;
 
-    void updateGame(Integer gameID, GameData gameUpdate);
+    void updateGame(Integer gameID, GameData gameUpdate) throws Exception;
 }

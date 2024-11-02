@@ -1,7 +1,6 @@
 package dataaccess;
 
 import model.GameData;
-import service.BadRequestException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,15 +14,17 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void createGame(GameData newGame) {
-        games.put(newGame.gameID(), newGame);
+    public int createGame(GameData newGame) {
+        ArrayList<GameData> allGames = listGames();
+        int idNum = allGames.size();
+        int gameID = idNum + 1;
+        GameData game = new GameData(gameID, newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName(), newGame.game());
+        games.put(newGame.gameID(), game);
+        return gameID;
     }
 
     @Override
     public GameData getGame(Integer gameID) throws Exception {
-        if (games.get(gameID) == null) {
-            throw new BadRequestException("Error: bad request");
-        }
         return games.get(gameID);
     }
 

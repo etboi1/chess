@@ -10,10 +10,10 @@ public class AuthServiceTest {
     static private ClearService clearService;
 
     @BeforeAll
-    public static void init() {
-        UserDAO userDataAccess = new MemoryUserDAO();
-        authDataAccess = new MemoryAuthDAO();
-        GameDAO gameDataAccess = new MemoryGameDAO();
+    public static void init() throws DataAccessException {
+        UserDAO userDataAccess = new MySqlUserDAO();
+        authDataAccess = new MySqlAuthDAO();
+        GameDAO gameDataAccess = new MySqlGameDAO();
         authService = new AuthService(authDataAccess);
         clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
     }

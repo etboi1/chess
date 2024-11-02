@@ -45,16 +45,6 @@ public class BaseMySqlDAO {
         }
     }
 
-    protected <T> T reader(ResultSet rs, String colName, Class<T> classType) throws DataAccessException {
-        String json;
-        try {
-            json = rs.getString("userData");
-        } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
-        }
-        return new Gson().fromJson(json, classType);
-    }
-
     protected void setParameters(PreparedStatement ps, Object... params) throws SQLException {
         for (var i = 0; i < params.length; i++) {
             var param = params[i];
@@ -90,7 +80,6 @@ public class BaseMySqlDAO {
                       `blackUsername` varchar(256) DEFAULT NULL,
                       `gameName` varchar(256) NOT NULL,
                       `game` JSON NOT NULL,
-                      `gameData` JSON NOT NULL,
                       PRIMARY KEY (`gameID`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
                     """,

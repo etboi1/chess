@@ -22,11 +22,7 @@ public class MySqlUserDAO extends BaseMySqlDAO implements UserDAO {
     public void createUser(UserData userData) throws DataAccessException {
         var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
         String hashedPassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
-        try {
-            super.performUpdate(statement, userData.username(), hashedPassword, userData.email());
-        } catch (DataAccessException e) {
-            throw new DataAccessException(e.getMessage());
-        }
+        super.performUpdate(statement, userData.username(), hashedPassword, userData.email());
     }
 
     @Override

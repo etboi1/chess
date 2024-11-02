@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.UserData;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.function.Function;
 
@@ -60,51 +61,67 @@ public class BaseMySqlDAO {
     }
 
     private static synchronized void initializeDatabase() throws DataAccessException {
-        String[] createStatements = {
-                """
-            CREATE TABLE IF NOT EXISTS users (
-              `username` varchar(256) NOT NULL,
-              `password` varchar(256) NOT NULL,
-              `email` varchar(256) NOT NULL,
-              PRIMARY KEY (`username`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """,
-                """
-            CREATE TABLE IF NOT EXISTS games (
-              `gameID` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) DEFAULT NULL,
-              `blackUsername` varchar(256) DEFAULT NULL,
-              `gameName` varchar(256) NOT NULL,
-              `game` JSON NOT NULL,
-              PRIMARY KEY (`gameID`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """,
-                """
-            CREATE TABLE IF NOT EXISTS auth (
-              `authToken` varchar(256) NOT NULL,
-              `username` varchar(256) NOT NULL,
-              PRIMARY KEY (`authToken`),
-              INDEX (`username`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-        };
-        // I'm including this (the conditional check) because I need this initializer to be able to throw DataAccessExceptions,
-        // which a static block can't do unfortunately, BUT I don't want this constructor to run every time
-        // I create an instance of one of the children
-        if (!isInitialized) {
-            try {
-                DatabaseManager.createDatabase();
-                try (var conn = DatabaseManager.getConnection()) {
-                    for (var statement : createStatements) {
-                        try (var preparedStatement = conn.prepareStatement(statement)) {
-                            preparedStatement.executeUpdate();
-                        }
-                    }
-                }
-                isInitialized = true;
-            } catch (SQLException ex) {
-                throw new DataAccessException("Unable to configure database: " + ex.getMessage());
+        if (isInitialized) {
+            return;
+        }
+
+        try {
+            DatabaseManager.createDatabase();
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Unable to configure database: " + e.getMessage());
+        }
+        createTables();
+
+        isInitialized = true;
+    }
+
+    private static void createTables() throws DataAccessException {
+        String[] createStatements = getCreateTableStatements();
+
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                executeStatement(conn, statement);
             }
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error creating tables: " + ex.getMessage());
+        }
+    }
+
+    private static String[] getCreateTableStatements() {
+        return new String[] {
+        """
+        CREATE TABLE IF NOT EXISTS users (
+          `username` varchar(256) NOT NULL,
+          `password` varchar(256) NOT NULL,
+          `email` varchar(256) NOT NULL,
+          PRIMARY KEY (`username`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS games (
+          `gameID` int NOT NULL AUTO_INCREMENT,
+          `whiteUsername` varchar(256) DEFAULT NULL,
+          `blackUsername` varchar(256) DEFAULT NULL,
+          `gameName` varchar(256) NOT NULL,
+          `game` JSON NOT NULL,
+          PRIMARY KEY (`gameID`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS auth (
+          `authToken` varchar(256) NOT NULL,
+          `username` varchar(256) NOT NULL,
+          PRIMARY KEY (`authToken`),
+          INDEX (`username`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+        """
+        };
+    }
+
+    // Extracted method to execute a statement
+    private static void executeStatement(Connection conn, String statement) throws SQLException {
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.executeUpdate();
         }
     }
 }

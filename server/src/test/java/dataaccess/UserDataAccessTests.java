@@ -18,7 +18,6 @@ public class UserDataAccessTests {
         userDataAccess = new MySqlUserDAO();
         AuthDAO authDataAccess = new MySqlAuthDAO();
         GameDAO gameDataAccess = new MySqlGameDAO();
-        UserService userService = new UserService(authDataAccess, userDataAccess);
         clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
     }
 

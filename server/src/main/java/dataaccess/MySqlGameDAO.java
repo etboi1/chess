@@ -22,7 +22,11 @@ public class MySqlGameDAO extends BaseMySqlDAO implements GameDAO {
     @Override
     public int createGame(GameData newGame) throws Exception {
         var statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
-        return performUpdate(statement, newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName(), newGame.game());
+        String json = null;
+        if (newGame.game() != null) {
+            json  = new Gson().toJson(newGame.game());
+        }
+        return performUpdate(statement, newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName(), json);
     }
 
     @Override

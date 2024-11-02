@@ -65,32 +65,32 @@ public class BaseMySqlDAO {
         // I create an instance of one of the children
         if (!isInitialized) {
             String[] createStatements = {
-                    """
-                    CREATE TABLE IF NOT EXISTS users (
-                      `username` varchar(256) NOT NULL,
-                      `password` varchar(256) NOT NULL,
-                      `email` varchar(256) NOT NULL,
-                      PRIMARY KEY (`username`)
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-                    """,
-                    """
-                    CREATE TABLE IF NOT EXISTS games (
-                      `gameID` int NOT NULL AUTO_INCREMENT,
-                      `whiteUsername` varchar(256) DEFAULT NULL,
-                      `blackUsername` varchar(256) DEFAULT NULL,
-                      `gameName` varchar(256) NOT NULL,
-                      `game` JSON NOT NULL,
-                      PRIMARY KEY (`gameID`)
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-                    """,
-                    """
-                    CREATE TABLE IF NOT EXISTS auth (
-                      `authToken` varchar(256) NOT NULL,
-                      `username` varchar(256) NOT NULL,
-                      PRIMARY KEY (`authToken`),
-                      INDEX (`username`)
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-                    """
+                """
+                CREATE TABLE IF NOT EXISTS users (
+                  `username` varchar(256) NOT NULL,
+                  `password` varchar(256) NOT NULL,
+                  `email` varchar(256) NOT NULL,
+                  PRIMARY KEY (`username`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+                """,
+                """
+                CREATE TABLE IF NOT EXISTS games (
+                  `gameID` int NOT NULL AUTO_INCREMENT,
+                  `whiteUsername` varchar(256) DEFAULT NULL,
+                  `blackUsername` varchar(256) DEFAULT NULL,
+                  `gameName` varchar(256) NOT NULL,
+                  `game` JSON NOT NULL,
+                  PRIMARY KEY (`gameID`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+                """,
+                """
+                CREATE TABLE IF NOT EXISTS auth (
+                  `authToken` varchar(256) NOT NULL,
+                  `username` varchar(256) NOT NULL,
+                  PRIMARY KEY (`authToken`),
+                  INDEX (`username`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+                """
             };
 
             try {

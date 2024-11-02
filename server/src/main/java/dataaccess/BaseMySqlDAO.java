@@ -60,12 +60,8 @@ public class BaseMySqlDAO {
     }
 
     private static synchronized void initializeDatabase() throws DataAccessException {
-        // I'm including this (the conditional check) because I need this initializer to be able to throw DataAccessExceptions,
-        // which a static block can't do unfortunately, BUT I don't want this constructor to run every time
-        // I create an instance of one of the children
-        if (!isInitialized) {
-            String[] createStatements = {
-            """
+        String[] createStatements = {
+                """
             CREATE TABLE IF NOT EXISTS users (
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
@@ -73,7 +69,7 @@ public class BaseMySqlDAO {
               PRIMARY KEY (`username`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
-            """
+                """
             CREATE TABLE IF NOT EXISTS games (
               `gameID` int NOT NULL AUTO_INCREMENT,
               `whiteUsername` varchar(256) DEFAULT NULL,
@@ -83,7 +79,7 @@ public class BaseMySqlDAO {
               PRIMARY KEY (`gameID`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
-            """
+                """
             CREATE TABLE IF NOT EXISTS auth (
               `authToken` varchar(256) NOT NULL,
               `username` varchar(256) NOT NULL,
@@ -91,8 +87,11 @@ public class BaseMySqlDAO {
               INDEX (`username`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
-            };
-
+        };
+        // I'm including this (the conditional check) because I need this initializer to be able to throw DataAccessExceptions,
+        // which a static block can't do unfortunately, BUT I don't want this constructor to run every time
+        // I create an instance of one of the children
+        if (!isInitialized) {
             try {
                 DatabaseManager.createDatabase();
                 try (var conn = DatabaseManager.getConnection()) {

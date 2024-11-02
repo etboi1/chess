@@ -60,7 +60,8 @@ public class GameDataAccessTests {
     @DisplayName("Get Game Success")
     public void getGameSuccess() throws Exception {
         var statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
-        baseDataAccess.performUpdate(statement, goodGame.whiteUsername(), goodGame.blackUsername(), goodGame.gameName(), new Gson().toJson(goodGame.game()));
+        baseDataAccess.performUpdate(statement, goodGame.whiteUsername(), goodGame.blackUsername(),
+                goodGame.gameName(), new Gson().toJson(goodGame.game()));
         GameData storedGame = gameDataAccess.getGame(1);
         Assertions.assertNotNull(storedGame);
         Assertions.assertEquals(goodGame.game(), storedGame.game());
@@ -71,7 +72,8 @@ public class GameDataAccessTests {
     @DisplayName("Fail to Get Game - no gameID supplied")
     public void getGameFailure() throws Exception{
         var statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
-        baseDataAccess.performUpdate(statement, goodGame.whiteUsername(), goodGame.blackUsername(), goodGame.gameName(), new Gson().toJson(goodGame.game()));
+        baseDataAccess.performUpdate(statement, goodGame.whiteUsername(), goodGame.blackUsername(),
+                goodGame.gameName(), new Gson().toJson(goodGame.game()));
         var storedGame = gameDataAccess.getGame(null);
         Assertions.assertNull(storedGame);
     }

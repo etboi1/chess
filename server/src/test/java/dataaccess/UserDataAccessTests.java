@@ -59,4 +59,13 @@ public class UserDataAccessTests {
         //The passwords will match in plaintext - because createUser method wasn't used, the password wasn't hashed
         Assertions.assertEquals(goodUser, storedUser);
     }
+
+    @Test
+    @DisplayName("Fail to get a User - user doesn't exist")
+    public void getUserFailure() throws Exception {
+        var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+        baseDataAccess.performUpdate(statement, goodUser.username(), goodUser.password(), goodUser.email());
+        UserData storedUser = userDataAccess.getUser("badUsername");
+        Assertions.assertNull(storedUser);
+    }
 }

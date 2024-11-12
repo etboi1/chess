@@ -97,6 +97,13 @@ public class GameDataAccessTests {
     }
 
     @Test
+    @DisplayName("List Games Fringe Case - No Games Exist")
+    public void listGamesEmpty() throws Exception {
+        ArrayList<GameData> storedList = gameDataAccess.listGames();
+        Assertions.assertTrue(storedList.isEmpty());
+    }
+
+    @Test
     @DisplayName("Update Game Successfully - add new user")
     public void updateGame() throws Exception {
         gameDataAccess.createGame(goodGame);
@@ -105,5 +112,13 @@ public class GameDataAccessTests {
         GameData storedGame = gameDataAccess.getGame(1);
         Assertions.assertEquals(updatedGame, storedGame);
         Assertions.assertNotEquals(goodGame, storedGame);
+    }
+
+    @Test
+    @DisplayName("Update Game Failure - invalid gameName")
+    public void updateGameFailure() throws Exception {
+        gameDataAccess.createGame(goodGame);
+        GameData updatedGame = new GameData(1, goodGame.whiteUsername(), "black", null, goodGame.game());
+        Assertions.assertThrows(DataAccessException.class, () -> gameDataAccess.updateGame(updatedGame.gameID(), updatedGame));
     }
 }

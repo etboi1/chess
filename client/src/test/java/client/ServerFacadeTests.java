@@ -5,24 +5,32 @@ import dataaccess.MySqlAuthDAO;
 import dataaccess.MySqlGameDAO;
 import dataaccess.MySqlUserDAO;
 import org.junit.jupiter.api.*;
+import response.LoginRegisterResponse;
 import server.Server;
+import server.ServerFacade;
 import service.ClearService;
 
 
 public class ServerFacadeTests {
 
     private static Server server;
+    static ServerFacade facade;
+    private static MySqlUserDAO userDao;
+    private static MySqlAuthDAO authDao;
+    private static MySqlGameDAO gameDao;
     private static ClearService clearService;
 
     @BeforeAll
     public static void init() throws DataAccessException {
         server = new Server();
-        var port = server.run(0);
+        var port = server.run(8080);
+        String serverUrl = "http://localhost:" + port;
         System.out.println("Started test HTTP server on " + port);
+        facade = new ServerFacade(serverUrl);
 
-        MySqlUserDAO userDao = new MySqlUserDAO();
-        MySqlAuthDAO authDao = new MySqlAuthDAO();
-        MySqlGameDAO gameDao = new MySqlGameDAO();
+        userDao = new MySqlUserDAO();
+        authDao = new MySqlAuthDAO();
+        gameDao = new MySqlGameDAO();
         clearService = new ClearService(userDao, authDao, gameDao);
     }
 
@@ -38,8 +46,11 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void registerSuccess() {
-        Assertions.assertTrue(true);
+    public void registerSuccess() throws Exception{
+        var registerResponse = facade.register("username", "password", "email");
+        Assertions.assertNotNull(registerResponse);
+        Assertions.assertTrue(registerResponse.authToken().length() > 10);
+        Assertions.assertEquals("username", registerResponse.username());
     }
 
     @Test
@@ -96,5 +107,4 @@ public class ServerFacadeTests {
     public void joinGameFailure() {
 
     }
-
 }

@@ -2,6 +2,9 @@ package server;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
+import model.UserData;
+import request.CreateGameRequest;
+import request.JoinGameRequest;
 import response.CreateGameResponse;
 import response.ListGamesResponse;
 import response.LoginRegisterResponse;
@@ -20,43 +23,48 @@ public class ServerFacade {
 
     public LoginRegisterResponse register(String username, String password, String email) throws ResponseException {
         var path = "/user";
-        return this.makeRequest("POST", path, LoginRegisterResponse.class, null, username, password, email);
+        UserData registerReq = new UserData(username, password, email);
+        return this.makeRequest("POST", path, LoginRegisterResponse.class, null, registerReq);
     }
 
     public LoginRegisterResponse login(String username, String password) throws ResponseException {
         var path = "/session";
-        return this.makeRequest("POST", path, LoginRegisterResponse.class, null, username, password);
+        UserData loginReq = new UserData(username, password, null);
+        return this.makeRequest("POST", path, LoginRegisterResponse.class, null, loginReq);
     }
 
     public void logout(String authToken) throws ResponseException {
         var path = "/session";
-        this.makeRequest("DELETE", path, null, authToken);
+        this.makeRequest("DELETE", path, null, authToken, null);
     }
 
     public CreateGameResponse createGame(String authToken, String gameName) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("POST", path, CreateGameResponse.class, authToken, gameName);
+        CreateGameRequest createReq = new CreateGameRequest(gameName);
+        return this.makeRequest("POST", path, CreateGameResponse.class, authToken, createReq);
     }
 
     public ListGamesResponse listGames(String authToken) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("GET", path, ListGamesResponse.class, authToken);
+        return this.makeRequest("GET", path, ListGamesResponse.class, authToken, null);
     }
 
-    public void joinGame(String authToken, String playerColor, String gameID) throws ResponseException {
+    public void joinGame(String authToken, String playerColor, Integer gameID) throws ResponseException {
         var path = "/game";
-        this.makeRequest("PUT", path, null, authToken, playerColor, gameID);
+        JoinGameRequest joinReq = new JoinGameRequest(playerColor, gameID);
+        this.makeRequest("PUT", path, null, authToken, joinReq);
     }
 
-    private <T> T makeRequest(String method, String path, Class<T> responseClass, String optionalHeader, String... requestParts) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Class<T> responseClass, String optionalHeader, Object req) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
-            writeBody(http, requestParts);
+            writeBody(http, req);
             setHeader(http, optionalHeader);
+            http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
@@ -64,10 +72,10 @@ public class ServerFacade {
         }
     }
 
-    private static void writeBody(HttpURLConnection http, String... requestParts) throws IOException {
-        if (requestParts.length > 0) {
+    private static void writeBody(HttpURLConnection http, Object req) throws IOException {
+        if (req != null) {
             http.addRequestProperty("Content-Type", "application/json");
-            String reqData = String.join("\n", requestParts);
+            String reqData = new Gson().toJson(req);
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }

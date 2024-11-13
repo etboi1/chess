@@ -23,8 +23,8 @@ public class ChessClient {
 
     public String eval(String input) {
         try {
-            var tokens = input.toLowerCase().split(" ");
-            var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            var tokens = input.split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "login" -> login(params);
@@ -107,6 +107,9 @@ public class ChessClient {
             ListGamesResponse listRes = server.listGames(currentAuth.authToken());
             ArrayList<GameData> games = listRes.games();
             String display = "";
+            if (games.isEmpty()) {
+                display = "No games created - be the first to start a game!\n";
+            }
             for (GameData game : games) {
                 String black = "AVAILABLE";
                 String white = "AVAILABLE";
@@ -134,7 +137,7 @@ public class ChessClient {
             String playerColor = params[1].toUpperCase();
             try {
                 server.joinGame(currentAuth.authToken(), playerColor, gameID);
-                return "Successfully joined game!";
+                return "Successfully joined game!\n";
             } catch (ResponseException ex) {
                 throw new ResponseException(400, ex.getMessage());
             }
@@ -145,7 +148,7 @@ public class ChessClient {
 
     public String observeGame(String... params) throws ResponseException {
         assertLoggedIn("observe a game");
-        return null;
+        return "Not yet implemented - coming phase 6!\n";
     }
 
     public String help() {
@@ -178,13 +181,13 @@ public class ChessClient {
         try {
             Integer.parseInt(potentialID);
         } catch (NumberFormatException e) {
-            throw new ResponseException(400, "<ID> must be a number matching desired game.");
+            throw new ResponseException(400, "<ID> must be a number matching desired game.\n");
         }
     }
 
     private void assertValidColor(String colorInput) throws ResponseException {
-        if (!Objects.equals(colorInput, "white") && !Objects.equals(colorInput, "black")) {
-            throw new ResponseException(400, "Second parameter must be \"WHITE\" or \"BLACK\".");
+        if (!Objects.equals(colorInput.toUpperCase(), "WHITE") && !Objects.equals(colorInput.toUpperCase(), "BLACK")) {
+            throw new ResponseException(400, "Second parameter must be \"WHITE\" or \"BLACK\".\n");
         }
     }
 }

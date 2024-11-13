@@ -21,7 +21,7 @@ public class UserService extends AuthService {
     public LoginRegisterResponse registerUser(UserData newUser) throws Exception {
         if (userDataAccess.getUser(newUser.username()) != null) {
             throw new RedundantDataException("Error: User already exists");
-        } else if (newUser.password() == null) {
+        } else if (newUser.password() == null || newUser.username() == null) {
             throw new BadRequestException("Error: Bad Request");
         }
         userDataAccess.createUser(newUser);

@@ -4,6 +4,8 @@ import dataaccess.DataAccessException;
 import dataaccess.MySqlAuthDAO;
 import dataaccess.MySqlGameDAO;
 import dataaccess.MySqlUserDAO;
+import exception.ResponseException;
+import model.UserData;
 import org.junit.jupiter.api.*;
 import response.LoginRegisterResponse;
 import server.Server;
@@ -44,28 +46,58 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+    UserData goodUser = new UserData("username", "password", "email");
 
     @Test
+    @DisplayName("Register Success ")
     public void registerSuccess() throws Exception{
         var registerResponse = facade.register("username", "password", "email");
         Assertions.assertNotNull(registerResponse);
         Assertions.assertTrue(registerResponse.authToken().length() > 10);
         Assertions.assertEquals("username", registerResponse.username());
+        System.out.println(registerResponse);
+    }
+
+    //At some point, check if you need to pass the error messages from the server all the way forward
+    @Test
+    @DisplayName("Register Failure - both failure cases")
+    public void registerFailure() throws Exception{
+        //No username provided
+        Exception ex = Assertions.assertThrows(ResponseException.class,
+                () -> facade.register(null, "password", "email"));
+        Assertions.assertEquals("failure: 400", ex.getMessage());
+        //Attempt to reuse existing username
+        userDao.createUser(goodUser);
+        Exception redundantEx = Assertions.assertThrows(ResponseException.class,
+                () -> facade.register(goodUser.username(), "newPassword", "newEmail"));
+        Assertions.assertEquals("failure: 403", redundantEx.getMessage());
     }
 
     @Test
-    public void registerFailure() {
+    @DisplayName("Login Success")
+    public void loginSuccess() throws Exception {
+        userDao.createUser(goodUser);
 
+        var loginResponse = facade.login("username", "password");
+        Assertions.assertNotNull(loginResponse);
+        Assertions.assertTrue(loginResponse.authToken().length() > 10);
+        Assertions.assertEquals("username", loginResponse.username());
     }
 
+    //At some point, check to see if you need to have a different error for the username not already existing
     @Test
-    public void loginSuccess() {
+    @DisplayName("Login Failure - testing both failure responses")
+    public void loginFailure() throws Exception{
+        //User Doesn't Exist
+        Exception ex = Assertions.assertThrows(ResponseException.class,
+                () -> facade.login("username", "password"));
+        Assertions.assertEquals("failure: 401", ex.getMessage());
 
-    }
-
-    @Test
-    public void loginFailure() {
-
+        //Unauthorized (Wrong Password)
+        userDao.createUser(goodUser);
+        Exception unAuthEx = Assertions.assertThrows(ResponseException.class,
+                () -> facade.login("username", "badPassword"));
+        Assertions.assertEquals("failure: 401", unAuthEx.getMessage());
     }
 
     @Test

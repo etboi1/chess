@@ -193,8 +193,8 @@ public class ServerFacadeTests {
     }
 
     @Test
-    @DisplayName("Join Game Failure - Join Filled Spot")
-    public void joinFullGame() throws Exception {
+    @DisplayName("Join Game Failure - Join Filled Spot or Invalid Request")
+    public void joinGameFailure() throws Exception {
         var registerRes = userService.registerUser(goodUser);
         gameDao.createGame(
                 new GameData(null, "user1", "user2", "gameName", new ChessGame())
@@ -202,17 +202,49 @@ public class ServerFacadeTests {
         Exception ex = Assertions.assertThrows(ResponseException.class,
                 () -> facade.joinGame(registerRes.authToken(), "WHITE", 1));
         Assertions.assertEquals("failure: 403", ex.getMessage());
-    }
-
-    @Test
-    @DisplayName("Join Game Failure - Bad Request")
-    public void joinGameBadRequest() throws Exception {
-        
+        Exception badReqEx = Assertions.assertThrows(ResponseException.class,
+                () -> facade.joinGame(registerRes.authToken(), "white", 1));
+        Assertions.assertEquals("failure: 400", badReqEx.getMessage());
     }
 
     @Test
     @DisplayName("Test All ServerFacade Methods - ensures no consistency errors")
-    public void testAll() {
+    public void testAll() throws Exception{
+        var registerRes = facade.register(goodUser.username(), goodUser.password(), goodUser.email());
+        Assertions.assertNotNull(registerRes);
+        Assertions.assertEquals(goodUser.username(), registerRes.username());
 
+        facade.logout(registerRes.authToken());
+        Assertions.assertNull(authDao.getAuth(registerRes.authToken()));
+
+        var loginRes = facade.login(goodUser.username(), goodUser.password());
+        Assertions.assertNotNull(loginRes);
+        Assertions.assertEquals(goodUser.username(), loginRes.username());
+
+        var createRes = facade.createGame(loginRes.authToken(), goodGame.gameName());
+        var game1 = gameDao.getGame(createRes.gameID());
+        Assertions.assertNotNull(game1);
+        Assertions.assertEquals(createRes.gameID(), game1.gameID());
+
+        var listGamesRes = facade.listGames(loginRes.authToken());
+        Assertions.assertEquals(1, listGamesRes.games().size());
+        Assertions.assertEquals(game1, listGamesRes.games().getFirst());
+
+        facade.joinGame(loginRes.authToken(), "WHITE", game1.gameID());
+        game1 = gameDao.getGame(game1.gameID());
+        Assertions.assertEquals(loginRes.username(), game1.whiteUsername());
+
+        facade.logout(loginRes.authToken());
+        UserData secondUser = new UserData("secondUser", "secondPassword", "secondEmail");
+        var registerRes2 = facade.register(secondUser.username(), secondUser.password(), secondUser.email());
+
+        var createRes2 = facade.createGame(registerRes2.authToken(), "secondGame");
+
+        listGamesRes = facade.listGames(registerRes2.authToken());
+        Assertions.assertEquals(2, listGamesRes.games().size());
+
+        facade.joinGame(registerRes2.authToken(), "BLACK", game1.gameID());
+        game1 = gameDao.getGame(game1.gameID());
+        Assertions.assertEquals(registerRes2.username(), game1.blackUsername());
     }
 }

@@ -8,7 +8,6 @@ import request.JoinGameRequest;
 import response.CreateGameResponse;
 import response.ListGamesResponse;
 import response.LoginRegisterResponse;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

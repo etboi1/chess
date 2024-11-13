@@ -29,6 +29,10 @@ public class GameService extends AuthService {
     public CreateGameResponse createGame(CreateGameRequest createRequest, String authToken) throws Exception {
         super.authenticate(authToken);
 
+        if (createRequest.gameName() == null) {
+            throw new BadRequestException("Error: bad request");
+        }
+
         GameData newGame = new GameData(null, null, null, createRequest.gameName(), new ChessGame());
         var gameID = gameDataAccess.createGame(newGame);
         return new CreateGameResponse(gameID);

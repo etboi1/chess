@@ -11,6 +11,7 @@ import response.LoginRegisterResponse;
 import server.Server;
 import server.ServerFacade;
 import service.ClearService;
+import service.UserService;
 
 
 public class ServerFacadeTests {
@@ -20,6 +21,7 @@ public class ServerFacadeTests {
     private static MySqlUserDAO userDao;
     private static MySqlAuthDAO authDao;
     private static MySqlGameDAO gameDao;
+    private static UserService userService;
     private static ClearService clearService;
 
     @BeforeAll
@@ -33,6 +35,7 @@ public class ServerFacadeTests {
         userDao = new MySqlUserDAO();
         authDao = new MySqlAuthDAO();
         gameDao = new MySqlGameDAO();
+        userService = new UserService(authDao, userDao);
         clearService = new ClearService(userDao, authDao, gameDao);
     }
 
@@ -101,23 +104,48 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void logoutSuccess() {
-
+    @DisplayName("Logout Success")
+    public void logoutSuccess() throws Exception{
+        var registerRes = userService.registerUser(goodUser);
+        Assertions.assertEquals(registerRes.authToken(), authDao.getAuth(registerRes.authToken()).authToken());
+        facade.logout(registerRes.authToken());
+        Assertions.assertNull(authDao.getAuth(registerRes.authToken()));
     }
 
     @Test
-    public void logoutFailure() {
-
+    @DisplayName("Logout Failure - unauthorized (incorrect auth)")
+    public void logoutFailure() throws Exception {
+        var registerRes = userService.registerUser(goodUser);
+        Assertions.assertEquals(registerRes.authToken(), authDao.getAuth(registerRes.authToken()).authToken());
+        Exception ex = Assertions.assertThrows(ResponseException.class,
+                () -> facade.logout("badAuthToken"));
+        Assertions.assertEquals("failure: 401", ex.getMessage());
     }
 
     @Test
-    public void createGameSuccess() {
-
+    @DisplayName("Create Game Success")
+    public void createGameSuccess() throws Exception {
+        var registerRes = userService.registerUser(goodUser);
+        var createRes = facade.createGame(registerRes.authToken(), "gameName");
+        Assertions.assertNotNull(createRes);
+        Assertions.assertInstanceOf(Integer.class, createRes.gameID());
+        var storedGame = gameDao.getGame(createRes.gameID());
+        Assertions.assertNotNull(storedGame);
+        Assertions.assertEquals("gameName", storedGame.gameName());
     }
 
     @Test
-    public void createGameFailure() {
-
+    @DisplayName("Create Game Failure - test unauthorized and null gameName exceptions")
+    public void createGameFailure() throws Exception {
+        //Unauthorized
+        var registerRes = userService.registerUser(goodUser);
+        Exception ex = Assertions.assertThrows(ResponseException.class,
+                () -> facade.createGame("badAuthToken", "gameName"));
+        Assertions.assertEquals("failure: 401", ex.getMessage());
+        //Trying to create a game with no name
+        Exception badNameEx = Assertions.assertThrows(ResponseException.class,
+                () -> facade.createGame(registerRes.authToken(), null));
+        Assertions.assertEquals("failure: 400", badNameEx.getMessage());
     }
 
     @Test
@@ -137,6 +165,12 @@ public class ServerFacadeTests {
 
     @Test
     public void joinGameFailure() {
+
+    }
+
+    @Test
+    @DisplayName("Test All Server Facade Methods")
+    public void testAll() {
 
     }
 }

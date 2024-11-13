@@ -1,10 +1,12 @@
 package client;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.MySqlAuthDAO;
 import dataaccess.MySqlGameDAO;
 import dataaccess.MySqlUserDAO;
 import exception.ResponseException;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import response.LoginRegisterResponse;
@@ -12,6 +14,8 @@ import server.Server;
 import server.ServerFacade;
 import service.ClearService;
 import service.UserService;
+
+import java.util.ArrayList;
 
 
 public class ServerFacadeTests {
@@ -148,14 +152,32 @@ public class ServerFacadeTests {
         Assertions.assertEquals("failure: 400", badNameEx.getMessage());
     }
 
-    @Test
-    public void listGamesSuccess() {
+    GameData goodGame = new GameData(null, null, null, "gameName", new ChessGame());
 
+    @Test
+    @DisplayName("List Games Success - also checks no games")
+    public void listGamesSuccess() throws Exception {
+        var registerRes = userService.registerUser(goodUser);
+        //Ensure an empty list is passed back when no games are stored
+        var listRes = facade.listGames(registerRes.authToken());
+        Assertions.assertNotNull(listRes);
+        Assertions.assertInstanceOf(ArrayList.class, listRes.games());
+        Assertions.assertTrue(listRes.games().isEmpty());
+        //Now ensure that a list of games is passed back when present
+        gameDao.createGame(goodGame);
+        Assertions.assertEquals(goodGame.gameName(), gameDao.getGame(1).gameName());
+        listRes = facade.listGames(registerRes.authToken());
+        Assertions.assertNotNull(listRes);
+        Assertions.assertEquals(goodGame.gameName(), listRes.games().getFirst().gameName());
     }
 
     @Test
-    public void listGamesFailure() {
-
+    @DisplayName("List Games Failure - unauthorized")
+    public void listGamesFailure() throws Exception{
+        var registerRes = userService.registerUser(goodUser);
+        Exception ex = Assertions.assertThrows(ResponseException.class,
+                () -> facade.listGames("badAuthToken"));
+        Assertions.assertEquals("failure: 401", ex.getMessage());
     }
 
     @Test
@@ -169,7 +191,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    @DisplayName("Test All Server Facade Methods")
+    @DisplayName("Test All ServerFacade Methods - ensures no consistency errors")
     public void testAll() {
 
     }

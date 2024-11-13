@@ -7,17 +7,15 @@ import java.util.Arrays;
 
 public class ChessClient {
     private final ServerFacade server;
-    private final String serverUrl;
     private State state = State.LOGGEDOUT;
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
     }
 
     public String eval(String input) {
         try {
-            var tokens = input.toLowerCase().split("");
+            var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
@@ -65,6 +63,22 @@ public class ChessClient {
     }
 
     public String help() {
-        return null;
+        if (state == State.LOGGEDOUT) {
+            return """
+                    register <USERNAME> <PASSWORD> <EMAIL> - to create an account
+                    login <USERNAME> <PASSWORD> - to play chess
+                    quit - playing chess
+                    help - with possible commands
+                    """;
+        }
+        return """
+                create <NAME> - a game
+                list - games
+                join <ID> [WHITE|BLACK] - a game
+                observe <ID> - a game
+                logout - when you are done
+                quit - playing chess
+                help - with possible commands
+                """;
     }
 }

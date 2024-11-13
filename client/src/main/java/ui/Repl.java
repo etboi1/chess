@@ -20,13 +20,20 @@ public class Repl {
             String line = scanner.nextLine();
 
             try {
-
+                result = client.eval(line);
+                System.out.print(SET_TEXT_COLOR_BLUE + result);
+            } catch (Throwable e) {
+                var msg = e.toString();
+                System.out.print(RESET_TEXT_BLINKING + RESET_TEXT_COLOR + SET_TEXT_COLOR_RED + msg);
             }
         }
+        System.out.println();
     }
 
     private void printPrompt() {
         System.out.print("\n" + RESET_TEXT_BLINKING + RESET_TEXT_COLOR +
-                ">>> " + SET_TEXT_BLINKING + SET_TEXT_COLOR_GREEN);
+                        SET_TEXT_BLINKING + SET_TEXT_COLOR_GREEN +
+                ">>> " + RESET_TEXT_COLOR + RESET_TEXT_BLINKING +
+                SET_TEXT_COLOR_DARK_GREY);
     }
 }

@@ -10,6 +10,7 @@ import server.ServerFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class ChessClient {
     private final ServerFacade server;
@@ -126,7 +127,20 @@ public class ChessClient {
 
     public String joinGame(String... params) throws ResponseException {
         assertLoggedIn("join a game");
-        return null;
+        if (params.length == 2) {
+            assertIsNumeric(params[0]);
+            int gameID = Integer.parseInt(params[0]);
+            assertValidColor(params[1]);
+            String playerColor = params[1].toUpperCase();
+            try {
+                server.joinGame(currentAuth.authToken(), playerColor, gameID);
+                return "Successfully joined game!";
+            } catch (ResponseException ex) {
+                throw new ResponseException(400, ex.getMessage());
+            }
+        }
+        throw new ResponseException(400,
+                "Expected: <ID> [WHITE|BLACK], where <ID> is a number matching desired game.\n");
     }
 
     public String observeGame(String... params) throws ResponseException {
@@ -157,6 +171,20 @@ public class ChessClient {
     private void assertLoggedIn(String attemptedFunction) throws ResponseException {
         if (state == State.LOGGEDOUT) {
             throw new ResponseException(400, "You must login to " + attemptedFunction + ".\n");
+        }
+    }
+
+    private void assertIsNumeric(String potentialID) throws ResponseException {
+        try {
+            Integer.parseInt(potentialID);
+        } catch (NumberFormatException e) {
+            throw new ResponseException(400, "<ID> must be a number matching desired game.");
+        }
+    }
+
+    private void assertValidColor(String colorInput) throws ResponseException {
+        if (!Objects.equals(colorInput, "white") && !Objects.equals(colorInput, "black")) {
+            throw new ResponseException(400, "Second parameter must be \"WHITE\" or \"BLACK\".");
         }
     }
 }

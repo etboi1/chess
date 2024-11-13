@@ -181,13 +181,33 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void joinGameSuccess() {
-
+    @DisplayName("Join Game Success")
+    public void joinGameSuccess() throws Exception{
+        var registerRes = userService.registerUser(goodUser);
+        gameDao.createGame(goodGame);
+        var storedGame = gameDao.getGame(1);
+        Assertions.assertNull(storedGame.whiteUsername());
+        facade.joinGame(registerRes.authToken(), "WHITE", 1);
+        var updatedGame = gameDao.getGame(1);
+        Assertions.assertEquals(updatedGame.whiteUsername(), registerRes.username());
     }
 
     @Test
-    public void joinGameFailure() {
+    @DisplayName("Join Game Failure - Join Filled Spot")
+    public void joinFullGame() throws Exception {
+        var registerRes = userService.registerUser(goodUser);
+        gameDao.createGame(
+                new GameData(null, "user1", "user2", "gameName", new ChessGame())
+        );
+        Exception ex = Assertions.assertThrows(ResponseException.class,
+                () -> facade.joinGame(registerRes.authToken(), "WHITE", 1));
+        Assertions.assertEquals("failure: 403", ex.getMessage());
+    }
 
+    @Test
+    @DisplayName("Join Game Failure - Bad Request")
+    public void joinGameBadRequest() throws Exception {
+        
     }
 
     @Test

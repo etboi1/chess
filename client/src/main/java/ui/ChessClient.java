@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessBoard;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -11,6 +12,8 @@ import server.ServerFacade;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+
+import static ui.BoardDisplay.*;
 
 public class ChessClient {
     private final ServerFacade server;
@@ -137,6 +140,10 @@ public class ChessClient {
             String playerColor = params[1].toUpperCase();
             try {
                 server.joinGame(currentAuth.authToken(), playerColor, gameID);
+                ChessBoard board = new ChessBoard();
+                board.resetBoard();
+                BoardDisplay.displayBoard(board);
+                System.out.println();
                 return "Successfully joined game!\n";
             } catch (ResponseException ex) {
                 throw new ResponseException(400, ex.getMessage());

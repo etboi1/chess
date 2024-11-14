@@ -50,19 +50,19 @@ public class EscapeSequences {
     public static final String SET_BG_COLOR_WHITE = SET_BG_COLOR + "15m";
     public static final String RESET_BG_COLOR = UNICODE_ESCAPE + "[49m";
 
-    public static final String WHITE_KING = " ♔ ";
-    public static final String WHITE_QUEEN = " ♕ ";
-    public static final String WHITE_BISHOP = " ♗ ";
-    public static final String WHITE_KNIGHT = " ♘ ";
-    public static final String WHITE_ROOK = " ♖ ";
-    public static final String WHITE_PAWN = " ♙ ";
-    public static final String BLACK_KING = " ♚ ";
-    public static final String BLACK_QUEEN = " ♛ ";
-    public static final String BLACK_BISHOP = " ♝ ";
-    public static final String BLACK_KNIGHT = " ♞ ";
-    public static final String BLACK_ROOK = " ♜ ";
-    public static final String BLACK_PAWN = " ♟ ";
-    public static final String EMPTY = " \u2003 ";
+    public static final String WHITE_KING = SET_TEXT_COLOR_WHITE + " K ";
+    public static final String WHITE_QUEEN = SET_TEXT_COLOR_WHITE + " Q ";
+    public static final String WHITE_BISHOP = SET_TEXT_COLOR_WHITE + " B ";
+    public static final String WHITE_KNIGHT = SET_TEXT_COLOR_WHITE + " N ";
+    public static final String WHITE_ROOK = SET_TEXT_COLOR_WHITE + " R ";
+    public static final String WHITE_PAWN = SET_TEXT_COLOR_WHITE + " P ";
+    public static final String BLACK_KING = SET_TEXT_COLOR_BLACK + " K ";
+    public static final String BLACK_QUEEN = SET_TEXT_COLOR_BLACK + " Q ";
+    public static final String BLACK_BISHOP = SET_TEXT_COLOR_BLACK + " B ";
+    public static final String BLACK_KNIGHT = SET_TEXT_COLOR_BLACK + " N ";
+    public static final String BLACK_ROOK = SET_TEXT_COLOR_BLACK + " R ";
+    public static final String BLACK_PAWN = SET_TEXT_COLOR_BLACK + " P ";
+    public static final String EMPTY = "   ";
 
     public static final String CROWN_EMOJI = " \uD83D\uDC51 ";
 

@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.*;
+import java.util.Map;
 
 public class ServerFacade {
 
@@ -90,7 +91,16 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new ResponseException(status, "failure: " + status);
+            //Check for error message from the server before throwing generic error
+            try (InputStream respBody = http.getErrorStream()) {
+                if (respBody != null) {
+                    InputStreamReader reader = new InputStreamReader(respBody);
+                    Map jsonMap = new Gson().fromJson(reader, Map.class);
+                    String errorMessage = (String) jsonMap.get("message");
+                    throw new ResponseException(status, errorMessage + "\n");
+                }
+            }
+            throw new ResponseException(status, "failure: " + status + "\n");
         }
     }
 

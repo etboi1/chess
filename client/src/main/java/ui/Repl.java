@@ -11,7 +11,9 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println(CROWN_EMOJI + "Welcome to chess! Type \"Help\" to get started." + CROWN_EMOJI);
+        System.out.println(CROWN_EMOJI + "Welcome to chess! Try one of the following commands to get started." + CROWN_EMOJI);
+        String startPrompt = client.help();
+        System.out.print(startPrompt);
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -21,10 +23,11 @@ public class Repl {
 
             try {
                 result = client.eval(line);
-                System.out.print(SET_TEXT_COLOR_BLUE + result);
+                System.out.print(RESET_TEXT_BLINKING + RESET_TEXT_COLOR + result);
             } catch (Throwable e) {
-                var msg = e.toString();
-                System.out.print(RESET_TEXT_BLINKING + RESET_TEXT_COLOR + SET_TEXT_COLOR_RED + msg);
+                var msg = e.getMessage();
+                System.out.print(RESET_TEXT_BLINKING + RESET_TEXT_COLOR + SET_TEXT_COLOR_RED + SET_TEXT_BOLD + msg
+                        + RESET_TEXT_BOLD_FAINT);
             }
         }
         System.out.println();
@@ -33,7 +36,6 @@ public class Repl {
     private void printPrompt() {
         System.out.print("\n" + RESET_TEXT_BLINKING + RESET_TEXT_COLOR +
                         SET_TEXT_BLINKING + SET_TEXT_COLOR_GREEN +
-                ">>> " + RESET_TEXT_COLOR + RESET_TEXT_BLINKING +
-                SET_TEXT_COLOR_DARK_GREY);
+                ">>> ");
     }
 }

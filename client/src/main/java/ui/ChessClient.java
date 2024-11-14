@@ -21,7 +21,7 @@ public class ChessClient {
         server = new ServerFacade(serverUrl);
     }
 
-    public String eval(String input) {
+    public String eval(String input) throws Throwable {
         try {
             var tokens = input.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
@@ -38,7 +38,7 @@ public class ChessClient {
                 default -> help();
             };
         } catch (ResponseException ex) {
-            return ex.getMessage();
+            throw new Throwable(ex.getMessage());
         }
     }
 
@@ -154,20 +154,26 @@ public class ChessClient {
     public String help() {
         if (state == State.LOGGEDOUT) {
             return """
-                    register <USERNAME> <PASSWORD> <EMAIL> - to create an account
-                    login <USERNAME> <PASSWORD> - to play chess
-                    quit - playing chess
-                    help - with possible commands
+                    Possible Commands:
+                    \tCOMMAND <PARAMETERS> - DESCRIPTION OF COMMAND
+                    
+                    \tregister <USERNAME> <PASSWORD> <EMAIL> - to create an account
+                    \tlogin <USERNAME> <PASSWORD> - to play chess
+                    \tquit - playing chess
+                    \thelp - with possible commands
                     """;
         }
         return """
-                create <NAME> - a game
-                list - games
-                join <ID> [WHITE|BLACK] - a game
-                observe <ID> - a game
-                logout - when you are done
-                quit - playing chess
-                help - with possible commands
+                Possible Commands:
+                \tCOMMAND <PARAMETERS> - DESCRIPTION OF COMMAND
+                
+                \tcreate <NAME> - a game
+                \tlist - games
+                \tjoin <ID> [WHITE|BLACK] - a game
+                \tobserve <ID> - a game
+                \tlogout - when you are done
+                \tquit - playing chess
+                \thelp - with possible commands
                 """;
     }
 

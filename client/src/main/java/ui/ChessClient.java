@@ -15,7 +15,7 @@ import java.util.Objects;
 public class ChessClient {
     private final ServerFacade server;
     private AuthData currentAuth;
-    private State state = State.LOGGEDOUT;
+    public State state = State.LOGGED_OUT;
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -49,8 +49,8 @@ public class ChessClient {
             try {
                 LoginRegisterResponse loginRes = server.login(username, password);
                 currentAuth = new AuthData(loginRes.authToken(), loginRes.username());
-                state = State.LOGGEDIN;
-                return String.format("You signed in as %s.\n", currentAuth.username());
+                state = State.LOGGED_IN;
+                return String.format("You are signed in as %s.\n", currentAuth.username());
             } catch (ResponseException ex) {
                 throw new ResponseException(400, ex.getMessage());
             }
@@ -66,8 +66,8 @@ public class ChessClient {
             try {
                 LoginRegisterResponse registerRes = server.register(username, password, email);
                 currentAuth = new AuthData(registerRes.authToken(), registerRes.username());
-                state = State.LOGGEDIN;
-                return String.format("You registered and signed in as %s.\n", currentAuth.username());
+                state = State.LOGGED_IN;
+                return String.format("You have successfully registered and are signed in as %s!\n", currentAuth.username());
             } catch (ResponseException ex) {
                 throw new ResponseException(400, ex.getMessage());
             }
@@ -79,7 +79,7 @@ public class ChessClient {
         assertLoggedIn("logout");
         try {
             server.logout(currentAuth.authToken());
-            state = State.LOGGEDOUT;
+            state = State.LOGGED_OUT;
             currentAuth = null;
         } catch (ResponseException ex) {
             throw new ResponseException(400, ex.getMessage());
@@ -93,12 +93,12 @@ public class ChessClient {
             String gameName = params[0];
             try {
                 CreateGameResponse createRes = server.createGame(currentAuth.authToken(), gameName);
-                return String.format("Created game with ID %s and name %s.\n", createRes.gameID(), gameName);
+                return String.format("Created game with ID %s and name %s!\n", createRes.gameID(), gameName);
             } catch (ResponseException ex) {
                 throw new ResponseException(400, ex.getMessage());
             }
         }
-        throw new ResponseException(400, "Expected: <NAME> (only one name accepted at a time).\n");
+        throw new ResponseException(400, "Expected: <NAME> (exactly one name accepted at a time).\n");
     }
 
     public String listGames() throws ResponseException {
@@ -152,7 +152,7 @@ public class ChessClient {
     }
 
     public String help() {
-        if (state == State.LOGGEDOUT) {
+        if (state == State.LOGGED_OUT) {
             return """
                     Possible Commands:
                     \tCOMMAND <PARAMETERS> - DESCRIPTION OF COMMAND
@@ -178,7 +178,7 @@ public class ChessClient {
     }
 
     private void assertLoggedIn(String attemptedFunction) throws ResponseException {
-        if (state == State.LOGGEDOUT) {
+        if (state == State.LOGGED_OUT) {
             throw new ResponseException(400, "You must login to " + attemptedFunction + ".\n");
         }
     }

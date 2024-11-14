@@ -5,6 +5,7 @@ import static ui.EscapeSequences.*;
 
 public class Repl {
     private final ChessClient client;
+    private State state;
 
     public Repl(String serverUrl) {
         client = new ChessClient(serverUrl);
@@ -18,6 +19,7 @@ public class Repl {
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
+            state = client.state;
             printPrompt();
             String line = scanner.nextLine();
 
@@ -36,6 +38,6 @@ public class Repl {
     private void printPrompt() {
         System.out.print("\n" + RESET_TEXT_BLINKING + RESET_TEXT_COLOR +
                         SET_TEXT_BLINKING + SET_TEXT_COLOR_GREEN +
-                ">>> ");
+                "[" + state + "] " + ">>> ");
     }
 }

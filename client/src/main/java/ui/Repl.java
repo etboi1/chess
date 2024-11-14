@@ -17,7 +17,6 @@ public class Repl {
         System.out.println(CROWN_EMOJI + "Welcome to chess! Try one of the following commands to get started." + CROWN_EMOJI);
         String startPrompt = client.help();
         System.out.print(startPrompt);
-        BoardDisplay.displayBoard(new ChessBoard());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";

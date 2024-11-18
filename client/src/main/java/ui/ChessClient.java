@@ -9,9 +9,7 @@ import response.ListGamesResponse;
 import response.LoginRegisterResponse;
 import server.ServerFacade;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 import static ui.BoardDisplay.*;
 
@@ -19,6 +17,7 @@ public class ChessClient {
     private final ServerFacade server;
     private AuthData currentAuth;
     public State state = State.LOGGED_OUT;
+    public Map<Integer, Integer> gameNumToID = new HashMap<>();
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -96,7 +95,7 @@ public class ChessClient {
             String gameName = params[0];
             try {
                 CreateGameResponse createRes = server.createGame(currentAuth.authToken(), gameName);
-                return String.format("Created game with ID %s and name %s!\n", createRes.gameID(), gameName);
+                return String.format("Created game with name %s!\n", gameName);
             } catch (ResponseException ex) {
                 throw new ResponseException(400, ex.getMessage());
             }
@@ -106,6 +105,7 @@ public class ChessClient {
 
     public String listGames() throws ResponseException {
         assertLoggedIn("list games");
+        int gameNum = 1;
         try {
             ListGamesResponse listRes = server.listGames(currentAuth.authToken());
             ArrayList<GameData> games = listRes.games();
@@ -122,8 +122,10 @@ public class ChessClient {
                 if (game.whiteUsername() != null) {
                     white = game.whiteUsername();
                 }
-                display += String.format("[%s] GameName: %s, White Player: %s, BlackPlayer: %s\n",
-                        game.gameID(), game.gameName(), white, black);
+                gameNumToID.put(gameNum, game.gameID());
+                display += String.format("[%s] GameName: %s, WhitePlayer: %s, BlackPlayer: %s\n",
+                        gameNum, game.gameName(), white, black);
+                gameNum++;
             }
             return display;
         } catch (ResponseException ex) {
@@ -134,15 +136,12 @@ public class ChessClient {
     public String joinGame(String... params) throws ResponseException {
         assertLoggedIn("join a game");
         if (params.length == 2) {
-            assertIsNumeric(params[0]);
-            int gameID = Integer.parseInt(params[0]);
+            Integer gameID = convertGameNumToGameID(params[0]);
             assertValidColor(params[1]);
             String playerColor = params[1].toUpperCase();
             try {
                 server.joinGame(currentAuth.authToken(), playerColor, gameID);
-                ChessBoard board = new ChessBoard();
-                board.resetBoard();
-                BoardDisplay.displayBoard(board);
+                loadBoard();
                 System.out.println();
                 return "Successfully joined game!\n";
             } catch (ResponseException ex) {
@@ -150,12 +149,16 @@ public class ChessClient {
             }
         }
         throw new ResponseException(400,
-                "Expected: <ID> [WHITE|BLACK], where <ID> is a number matching desired game.\n");
+                "Expected: <GAME_NUMBER> [WHITE|BLACK], where <GAME_NUMBER> is a number matching desired game.\n");
     }
 
     public String observeGame(String... params) throws ResponseException {
         assertLoggedIn("observe a game");
-        return "Not yet implemented - coming phase 6!\n";
+        if (params.length == 1) {
+            convertGameNumToGameID(params[0]);
+            loadBoard();
+        }
+        return "\nNot yet implemented - coming phase 6!\n";
     }
 
     public String help() {
@@ -176,8 +179,8 @@ public class ChessClient {
                 
                 \tcreate <NAME> - a game
                 \tlist - games
-                \tjoin <ID> [WHITE|BLACK] - a game
-                \tobserve <ID> - a game
+                \tjoin <GAME_NUMBER> [WHITE|BLACK] - a game
+                \tobserve <GAME_NUMBER> - a game
                 \tlogout - when you are done
                 \tquit - playing chess
                 \thelp - with possible commands
@@ -194,7 +197,7 @@ public class ChessClient {
         try {
             Integer.parseInt(potentialID);
         } catch (NumberFormatException e) {
-            throw new ResponseException(400, "<ID> must be a number matching desired game.\n");
+            throw new ResponseException(400, "<GAME_NUMBER> must be a number matching desired game.\n");
         }
     }
 
@@ -202,5 +205,26 @@ public class ChessClient {
         if (!Objects.equals(colorInput.toUpperCase(), "WHITE") && !Objects.equals(colorInput.toUpperCase(), "BLACK")) {
             throw new ResponseException(400, "Second parameter must be \"WHITE\" or \"BLACK\".\n");
         }
+    }
+
+    private Integer convertGameNumToGameID(String gameNumber) throws ResponseException {
+        assertIsNumeric(gameNumber);
+        Integer listNum = Integer.parseInt(gameNumber);
+        Integer gameID = gameNumToID.get(listNum);
+        if (gameID == null) {
+            throw new ResponseException(400, """
+                    Provided GAME_NUMBER does not \
+                    match any numbers from previously listed games.
+                    Please list games again and double check \
+                    GAME_NUMBER matches desired game.
+                    """);
+        }
+        return gameID;
+    }
+
+    private void loadBoard() {
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        BoardDisplay.displayBoard(board);
     }
 }

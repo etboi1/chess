@@ -17,15 +17,20 @@ public class BoardDisplay {
     }
 
     private static void printBoard(ChessBoard board, boolean flip) {
-        printColumnLabels(flip);
 
         int start = flip ? 1 : 8;
         int end = flip ? 8 : 1;
         int step = flip ? 1 : -1;
 
+        int colStart = flip ? 8 : 1;
+        int colEnd = flip ? 1 : 8;
+        int colStep = flip ? -1 : 1;
+
+        printColumnLabels(flip, colStart, colEnd, colStep);
+
         for (int row = start; flip ? row <= end : row >= end; row += step) {
             System.out.print(SET_BG_COLOR_LIGHT_BLUE + SET_TEXT_COLOR_BLACK + " " + row + " ");
-            for (int col = 1; col <= 8; col++) {
+            for (int col = colStart; flip ? col >= colEnd : col <= colEnd; col += colStep) {
                 if ((row + col) % 2 == 1) {
                     System.out.print(SET_BG_COLOR_LIGHT_BROWN);
                 } else {
@@ -42,18 +47,14 @@ public class BoardDisplay {
             System.out.println(SET_BG_COLOR_LIGHT_BLUE + SET_TEXT_COLOR_BLACK + " " + row + " " + RESET_BG_COLOR);
         }
 
-        printColumnLabels(flip);
+        printColumnLabels(flip, colStart, colEnd, colStep);
     }
 
-    private static void printColumnLabels(boolean flip) {
-        int start = flip ? 8 : 1;
-        int end = flip ? 1 : 8;
-        int step = flip ? -1 : 1;
-
+    private static void printColumnLabels(boolean flip, Integer colStart, Integer colEnd, Integer colStep) {
         System.out.print(SET_BG_COLOR_LIGHT_BLUE + SET_TEXT_COLOR_BLACK + "   ");
 
         String[] colNames = "abcdefgh".split("");
-        for (int i = start; flip ? i >= end : i <= end; i += step) {
+        for (int i = colStart; flip ? i >= colEnd : i <= colEnd; i += colStep) {
             System.out.print(" " + colNames[i - 1] + " ");
         }
         System.out.print("   ");

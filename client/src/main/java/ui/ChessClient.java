@@ -141,6 +141,7 @@ public class ChessClient {
             String playerColor = params[1].toUpperCase();
             try {
                 server.joinGame(currentAuth.authToken(), playerColor, gameID);
+                state = State.GAMEPLAY;
                 loadBoard();
                 System.out.println();
                 return "Successfully joined game!\n";
@@ -156,9 +157,35 @@ public class ChessClient {
         assertLoggedIn("observe a game");
         if (params.length == 1) {
             convertGameNumToGameID(params[0]);
+            state = State.GAMEPLAY;
             loadBoard();
         }
         return "\nNot yet implemented - coming phase 6!\n";
+    }
+
+    public String redrawGame() throws ResponseException {
+        assertInGame("redraw the chess board");
+        return null;
+    }
+
+    public void highlightMoves(String... params) throws ResponseException {
+        assertInGame("highlight legal moves");
+    }
+
+    public void makeMove(String... params) throws ResponseException {
+        assertInGame("make a move");
+    }
+
+    public String leaveGame() throws ResponseException {
+        assertInGame("leave a game");
+        state = State.LOGGED_IN;
+        return "You have successfully left the game.";
+    }
+
+    public String resignGame() throws ResponseException {
+        assertInGame("resign a game");
+        state = State.LOGGED_IN;
+        return "You have successfully resigned.";
     }
 
     public String help() {
@@ -172,8 +199,8 @@ public class ChessClient {
                     \tquit - playing chess
                     \thelp - with possible commands
                     """;
-        }
-        return """
+        } else if (state == State.LOGGED_IN) {
+            return """
                 Possible Commands:
                 \tCOMMAND <PARAMETERS> - DESCRIPTION OF COMMAND
                 
@@ -182,14 +209,31 @@ public class ChessClient {
                 \tjoin <GAME_NUMBER> [WHITE|BLACK] - a game
                 \tobserve <GAME_NUMBER> - a game
                 \tlogout - when you are done
-                \tquit - playing chess
+                \thelp - with possible commands
+                """;
+        }
+        return """
+                Possible Commands:
+                \tCOMMAND <PARAMETERS> - DESCRIPTION OF COMMAND
+                
+                \tredraw - the chess board
+                \thighlight <ROW> <COLUMN> - a piece's all legal moves
+                \tmove <START_ROW> <START_COLUMN> <END_ROW> <END_COLUMN> - make a move
+                \tleave - quit this game
+                \tresign - forfeit game
                 \thelp - with possible commands
                 """;
     }
 
     private void assertLoggedIn(String attemptedFunction) throws ResponseException {
-        if (state == State.LOGGED_OUT) {
+        if (state != State.LOGGED_IN) {
             throw new ResponseException(400, "You must login to " + attemptedFunction + ".\n");
+        }
+    }
+
+    private void assertInGame(String attemptedFunction) throws ResponseException {
+        if (state != State.GAMEPLAY) {
+            throw new ResponseException(400, "You must join a game to " + attemptedFunction + ".\n");
         }
     }
 

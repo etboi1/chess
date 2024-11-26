@@ -6,6 +6,7 @@ import model.AuthData;
 import model.UserData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
+import server.websocket.WebSocketHandler;
 import service.*;
 import spark.*;
 
@@ -25,15 +26,19 @@ public class Server {
             throw new RuntimeException(e.getMessage());
         }
     }
-    final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
-    final UserService userService = new UserService(authDataAccess, userDataAccess);
-    final GameService gameService = new GameService(gameDataAccess, authDataAccess);
-    final Gson serializer = new Gson();
+
+    private final WebSocketHandler webSocketHandler = new WebSocketHandler();
+    private final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
+    private final UserService userService = new UserService(authDataAccess, userDataAccess);
+    private final GameService gameService = new GameService(gameDataAccess, authDataAccess);
+    private final Gson serializer = new Gson();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        Spark.webSocket("/ws", webSocketHandler);
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::createUser);

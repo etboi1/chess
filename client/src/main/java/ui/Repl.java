@@ -1,11 +1,15 @@
 package ui;
 
 import chess.ChessBoard;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
-public class Repl {
+public class Repl implements NotificationHandler {
     private final ChessClient client;
     private State state;
 
@@ -35,6 +39,20 @@ public class Repl {
             }
         }
         System.out.println();
+    }
+
+    public void notify(ServerMessage serverMessage) {
+        if (serverMessage instanceof NotificationMessage notification) {
+            System.out.println(notification.getMessage());
+            printPrompt();
+        } else if (serverMessage instanceof ErrorMessage error) {
+            System.out.println(error.getErrorMessage());
+            printPrompt();
+        } else {
+            LoadGameMessage loadGame = (LoadGameMessage) serverMessage;
+            BoardDisplay.displayBoard(loadGame.game.getBoard());
+            printPrompt();
+        }
     }
 
     private void printPrompt() {

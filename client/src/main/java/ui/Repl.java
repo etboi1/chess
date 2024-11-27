@@ -1,6 +1,5 @@
 package ui;
 
-import chess.ChessBoard;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -14,7 +13,7 @@ public class Repl implements NotificationHandler {
     private State state;
 
     public Repl(String serverUrl) {
-        client = new ChessClient(serverUrl);
+        client = new ChessClient(serverUrl, this);
     }
 
     public void run() {
@@ -50,7 +49,7 @@ public class Repl implements NotificationHandler {
             printPrompt();
         } else {
             LoadGameMessage loadGame = (LoadGameMessage) serverMessage;
-            BoardDisplay.displayBoard(loadGame.game.getBoard());
+            BoardDisplay.displayBoard(loadGame.gameData.game().getBoard());
             printPrompt();
         }
     }

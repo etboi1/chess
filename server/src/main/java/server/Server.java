@@ -27,7 +27,7 @@ public class Server {
         }
     }
 
-    private final WebSocketHandler webSocketHandler = new WebSocketHandler();
+    private final WebSocketHandler webSocketHandler = new WebSocketHandler(authDataAccess, gameDataAccess);
     private final ClearService clearService = new ClearService(userDataAccess, authDataAccess, gameDataAccess);
     private final UserService userService = new UserService(authDataAccess, userDataAccess);
     private final GameService gameService = new GameService(gameDataAccess, authDataAccess);

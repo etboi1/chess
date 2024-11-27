@@ -8,19 +8,23 @@ import response.CreateGameResponse;
 import response.ListGamesResponse;
 import response.LoginRegisterResponse;
 import server.ServerFacade;
+import websocket.WebSocketFacade;
 
 import java.util.*;
-
-import static ui.BoardDisplay.*;
 
 public class ChessClient {
     private final ServerFacade server;
     private AuthData currentAuth;
-    public State state = State.LOGGED_OUT;
+    private final String serverUrl;
+    private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
     public Map<Integer, Integer> gameNumToID = new HashMap<>();
+    public State state = State.LOGGED_OUT;
 
-    public ChessClient(String serverUrl) {
+    public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
+        this.serverUrl = serverUrl;
+        this.notificationHandler = notificationHandler;
     }
 
     public String eval(String input) throws Throwable {
@@ -36,6 +40,11 @@ public class ChessClient {
                 case "list" -> listGames();
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
+                case "redraw" -> redrawGame();
+                case "highlight" -> highlightMoves(params);
+                case "move" -> makeMove(params);
+                case "leave" -> leaveGame();
+                case "resign" -> resignGame();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -141,9 +150,10 @@ public class ChessClient {
             String playerColor = params[1].toUpperCase();
             try {
                 server.joinGame(currentAuth.authToken(), playerColor, gameID);
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
                 state = State.GAMEPLAY;
-                loadBoard();
                 System.out.println();
+                ws.join(currentAuth.authToken(), gameID);
                 return "Successfully joined game!\n";
             } catch (ResponseException ex) {
                 throw new ResponseException(400, ex.getMessage());
@@ -168,12 +178,14 @@ public class ChessClient {
         return null;
     }
 
-    public void highlightMoves(String... params) throws ResponseException {
+    public String highlightMoves(String... params) throws ResponseException {
         assertInGame("highlight legal moves");
+        return null;
     }
 
-    public void makeMove(String... params) throws ResponseException {
+    public String makeMove(String... params) throws ResponseException {
         assertInGame("make a move");
+        return null;
     }
 
     public String leaveGame() throws ResponseException {

@@ -16,7 +16,7 @@ public class ConnectionManager {
         connections.put(connectedUser, connection);
     }
 
-    public void leave(String connectedUser) { connections.remove(connectedUser); }
+    public void remove(String connectedUser) { connections.remove(connectedUser); }
 
     public void broadcast(String rootClient, Integer rootGameID, ServerMessage serverMessage) throws IOException {
         var removeList = new ArrayList<Connection>();

@@ -17,6 +17,7 @@ public class ChessClient {
     private AuthData currentAuth;
     private final String serverUrl;
     private final NotificationHandler notificationHandler;
+    private Integer currentGameID;
     private WebSocketFacade ws;
     public Map<Integer, Integer> gameNumToID = new HashMap<>();
     public State state = State.LOGGED_OUT;
@@ -148,6 +149,7 @@ public class ChessClient {
         assertLoggedIn("join a game");
         if (params.length == 2) {
             Integer gameID = convertGameNumToGameID(params[0]);
+            currentGameID = gameID;
             assertValidColor(params[1]);
             String playerColor = params[1].toUpperCase();
             try {
@@ -168,6 +170,7 @@ public class ChessClient {
         assertLoggedIn("observe a game");
         if (params.length == 1) {
             Integer gameID = convertGameNumToGameID(params[0]);
+            currentGameID = gameID;
             ws = new WebSocketFacade(serverUrl, notificationHandler, currentAuth.username());
             ws.join(currentAuth.authToken(), gameID);
             state = State.GAMEPLAY;
@@ -192,6 +195,7 @@ public class ChessClient {
 
     public String leaveGame() throws ResponseException {
         assertInGame("leave a game");
+        ws.leave(currentAuth.authToken(), currentGameID);
         state = State.LOGGED_IN;
         return "You have successfully left the game.";
     }

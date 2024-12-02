@@ -1,23 +1,18 @@
 package server.websocket;
 
 
-import chess.ChessGame;
-import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.junit.jupiter.api.Assertions;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
-
-import java.io.IOException;
 
 @WebSocket
 public class WebSocketHandler {
@@ -43,10 +38,25 @@ public class WebSocketHandler {
     }
 
     private void connect(String authToken, Integer gameID, Session session) throws Exception {
+        //Ensure that the root client is authorized and the game exists before saving the connection
         var rootUserAuth = authDataAccess.getAuth(authToken);
+        if (rootUserAuth == null) {
+            var errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "Error: unauthorized");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            return;
+        }
         var rootUser = rootUserAuth.username();
-        connections.join(rootUserAuth.username(), session, gameID);
+
         var targetGame = gameDataAccess.getGame(gameID);
+        if (targetGame == null) {
+            var errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "Error: No game exists with provided gameID.");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            return;
+        }
+
+        connections.add(rootUserAuth.username(), session, gameID);
 
         //Notify other players the root client joined the game
         var notificationMessage = getNotificationMessage(rootUser, targetGame);

@@ -54,6 +54,7 @@ public class ChessClient {
     }
 
     public String login(String... params) throws ResponseException {
+        assertLoggedOut("login");
         if (params.length == 2) {
             String username = params[0];
             String password = params[1];
@@ -70,6 +71,7 @@ public class ChessClient {
     }
 
     public String register(String... params) throws ResponseException {
+        assertLoggedOut("register");
         if (params.length ==3) {
             String username = params[0];
             String password = params[1];
@@ -151,10 +153,9 @@ public class ChessClient {
             try {
                 server.joinGame(currentAuth.authToken(), playerColor, gameID);
                 ws = new WebSocketFacade(serverUrl, notificationHandler, currentAuth.username());
-                state = State.GAMEPLAY;
                 System.out.println();
                 ws.join(currentAuth.authToken(), gameID);
-                return "Successfully joined game!\n";
+                state = State.GAMEPLAY;
             } catch (ResponseException ex) {
                 throw new ResponseException(400, ex.getMessage());
             }
@@ -166,11 +167,12 @@ public class ChessClient {
     public String observeGame(String... params) throws ResponseException {
         assertLoggedIn("observe a game");
         if (params.length == 1) {
-            convertGameNumToGameID(params[0]);
+            Integer gameID = convertGameNumToGameID(params[0]);
+            ws = new WebSocketFacade(serverUrl, notificationHandler, currentAuth.username());
+            ws.join(currentAuth.authToken(), gameID);
             state = State.GAMEPLAY;
-            loadBoard();
         }
-        return "\nNot yet implemented - coming phase 6!\n";
+        throw new ResponseException(400, "Expected: <GAME_NUMBER>, which is a number matching desired game.\n");
     }
 
     public String redrawGame() throws ResponseException {
@@ -237,9 +239,15 @@ public class ChessClient {
                 """;
     }
 
+    private void assertLoggedOut(String attemptedFunction) throws ResponseException {
+        if (state != State.LOGGED_OUT) {
+            throw new ResponseException(400, "You must be logged out to " + attemptedFunction + ".\n");
+        }
+    }
+
     private void assertLoggedIn(String attemptedFunction) throws ResponseException {
         if (state != State.LOGGED_IN) {
-            throw new ResponseException(400, "You must login to " + attemptedFunction + ".\n");
+            throw new ResponseException(400, "You must be logged in and not in a game to " + attemptedFunction + ".\n");
         }
     }
 

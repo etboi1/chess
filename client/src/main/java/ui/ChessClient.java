@@ -1,6 +1,9 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -190,7 +193,33 @@ public class ChessClient {
 
     public String makeMove(String... params) throws ResponseException {
         assertInGame("make a move");
-        return null;
+        if (params.length == 4 | params.length == 5) {
+            assertParamsNumeric(params[1], params[3]);
+            Integer startCol = convertColumn(params[0]);
+            Integer endCol = convertColumn(params[2]);
+            ChessPosition startPosition = new ChessPosition(Integer.parseInt(params[1]), startCol);
+            ChessPosition endPosition = new ChessPosition(Integer.parseInt(params[3]), endCol);
+            ChessPiece.PieceType promotionType = getPromotionType(params);
+            ChessMove move = new ChessMove(startPosition, endPosition, promotionType);
+            ws.makeMove(currentAuth.authToken(), currentGameID, move);
+        }
+        throw new ResponseException(400, "Expected: <START_COLUMN> <START_ROW> <END_COLUMN> <END_ROW> <PAWN_PROMOTION_PIECE>");
+    }
+
+    private ChessPiece.PieceType getPromotionType(String[] params) throws ResponseException {
+        ChessPiece.PieceType promotionType = null;
+        if (params.length == 5) {
+            var pieceType = params[4].toLowerCase();
+            switch (pieceType) {
+                case "bishop" -> promotionType = ChessPiece.PieceType.BISHOP;
+                case "knight" -> promotionType = ChessPiece.PieceType.KNIGHT;
+                case "queen" -> promotionType = ChessPiece.PieceType.QUEEN;
+                case "rook" -> promotionType = ChessPiece.PieceType.ROOK;
+                default -> throw new ResponseException(400,
+                        "Pawn promotion piece must be bishop, knight, queen, or rook");
+            }
+        }
+        return promotionType;
     }
 
     public String leaveGame() throws ResponseException {
@@ -236,7 +265,8 @@ public class ChessClient {
                 
                 \tredraw - the chess board
                 \thighlight <ROW> <COLUMN> - a piece's all legal moves
-                \tmove <START_ROW> <START_COLUMN> <END_ROW> <END_COLUMN> - make a move
+                \tmove <START_COLUMN> <START_ROW> <END_COLUMN> <END_ROW> <PAWN_PROMOTION_PIECE> - make a move \
+                (and provide promotion piece type if moving pawn to end of board)
                 \tleave - quit this game
                 \tresign - forfeit game
                 \thelp - with possible commands
@@ -273,6 +303,36 @@ public class ChessClient {
         if (!Objects.equals(colorInput.toUpperCase(), "WHITE") && !Objects.equals(colorInput.toUpperCase(), "BLACK")) {
             throw new ResponseException(400, "Second parameter must be \"WHITE\" or \"BLACK\".\n");
         }
+    }
+
+    private void assertParamsNumeric(String... params) throws ResponseException {
+        for (String param : params) {
+            try {
+                int coordinate = Integer.parseInt(param);
+                if (coordinate < 1 | coordinate > 8) {
+                    throw new ResponseException(400, "Both row values must be between 1-8.");
+                }
+            } catch (NumberFormatException ex) {
+                throw new ResponseException(400, "Both row values must be numbers.");
+            }
+        }
+    }
+
+    private Integer convertColumn(String col) throws ResponseException {
+        final Map<String, Integer> conversionMap = Map.of(
+                "a", 1,
+                "b", 2,
+                "c", 3,
+                "d", 4,
+                "e", 5,
+                "f", 6,
+                "g", 7,
+                "h", 8
+        );
+        if (!conversionMap.containsKey(col)) {
+            throw new ResponseException(400, "Both column values must be letters between a-h.");
+        }
+        return conversionMap.get(col);
     }
 
     private Integer convertGameNumToGameID(String gameNumber) throws ResponseException {

@@ -1,10 +1,12 @@
 package ui;
 
+import chess.ChessGame;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
+import java.util.Objects;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
@@ -40,7 +42,7 @@ public class Repl implements NotificationHandler {
         System.out.println();
     }
 
-    public void notify(ServerMessage serverMessage) {
+    public void notify(ServerMessage serverMessage, String currentUser) {
         if (serverMessage instanceof NotificationMessage notification) {
             System.out.println(notification.getMessage());
             printPrompt();
@@ -49,7 +51,12 @@ public class Repl implements NotificationHandler {
             printPrompt();
         } else {
             LoadGameMessage loadGame = (LoadGameMessage) serverMessage;
-            BoardDisplay.displayBoard(loadGame.game.game().getBoard());
+            System.out.println();
+            if (Objects.equals(loadGame.game.whiteUsername(), currentUser)) {
+                BoardDisplay.printBoard(loadGame.game.game().getBoard(), false);
+            } else if (Objects.equals(loadGame.game.blackUsername(), currentUser)) {
+                BoardDisplay.printBoard(loadGame.game.game().getBoard(), true);
+            }
             printPrompt();
         }
     }

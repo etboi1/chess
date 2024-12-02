@@ -20,7 +20,7 @@ public class WebSocketFacade extends Endpoint {
 
     Session session;
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
+    public WebSocketFacade(String url, NotificationHandler notificationHandler, String currentUser) throws ResponseException {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -32,7 +32,7 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     var serverMessage = jsonTypeChecker(message);
-                    notificationHandler.notify(serverMessage);
+                    notificationHandler.notify(serverMessage, currentUser);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {

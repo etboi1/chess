@@ -150,7 +150,7 @@ public class ChessClient {
             String playerColor = params[1].toUpperCase();
             try {
                 server.joinGame(currentAuth.authToken(), playerColor, gameID);
-                ws = new WebSocketFacade(serverUrl, notificationHandler);
+                ws = new WebSocketFacade(serverUrl, notificationHandler, currentAuth.username());
                 state = State.GAMEPLAY;
                 System.out.println();
                 ws.join(currentAuth.authToken(), gameID);

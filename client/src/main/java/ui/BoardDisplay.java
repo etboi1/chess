@@ -17,7 +17,7 @@ public class BoardDisplay {
         printBoard(board, true);
     }
 
-    private static void printBoard(ChessBoard board, boolean flip) {
+    public static void printBoard(ChessBoard board, boolean flip) {
 
         int start = flip ? 1 : 8;
         int end = flip ? 8 : 1;

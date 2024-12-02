@@ -4,12 +4,12 @@ import model.GameData;
 
 public class LoadGameMessage extends ServerMessage {
 
-    public final GameData gameData;
+    public final GameData game;
 
     public LoadGameMessage(ServerMessageType type, GameData gameData) {
         super(type);
-        this.gameData = gameData;
+        this.game = gameData;
     }
 
-    public GameData getGameData() { return gameData; }
+    public GameData getGameData() { return game; }
 }

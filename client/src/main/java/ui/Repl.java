@@ -49,7 +49,7 @@ public class Repl implements NotificationHandler {
             printPrompt();
         } else {
             LoadGameMessage loadGame = (LoadGameMessage) serverMessage;
-            BoardDisplay.displayBoard(loadGame.gameData.game().getBoard());
+            BoardDisplay.displayBoard(loadGame.game.game().getBoard());
             printPrompt();
         }
     }

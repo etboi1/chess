@@ -10,6 +10,7 @@ import static ui.EscapeSequences.*;
 public class BoardDisplay {
 
     public static void displayBoard(ChessBoard board) {
+        System.out.println();
         printBoard(board, false);
         System.out.print(SET_BG_COLOR_LIGHT_BLUE + SET_TEXT_COLOR_BLACK + "-".repeat(30) + RESET_BG_COLOR);
         System.out.println();

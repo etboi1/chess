@@ -24,11 +24,19 @@ public class ChessClient {
     private WebSocketFacade ws;
     public Map<Integer, Integer> gameNumToID = new HashMap<>();
     public State state = State.LOGGED_OUT;
+    public PlayerColor rootColor = PlayerColor.NONE;
+    public ChessBoard currentBoard = null;
 
     public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.notificationHandler = notificationHandler;
+    }
+
+    public enum PlayerColor {
+        WHITE,
+        BLACK,
+        NONE
     }
 
     public String eval(String input) throws Throwable {
@@ -187,7 +195,8 @@ public class ChessClient {
 
     public String redrawGame() throws ResponseException {
         assertInGame("redraw the chess board");
-        return null;
+        BoardDisplay.printBoard(currentBoard, rootColor == PlayerColor.BLACK);
+        return "";
     }
 
     public String highlightMoves(String... params) throws ResponseException {
@@ -207,7 +216,7 @@ public class ChessClient {
             ChessMove move = new ChessMove(startPosition, endPosition, promotionType);
             ws.makeMove(currentAuth.authToken(), currentGameID, move);
         } else {
-            throw new ResponseException(400, "Expected: <START_COLUMN> <START_ROW> <END_COLUMN> <END_ROW> <PAWN_PROMOTION_PIECE>");
+            throw new ResponseException(400, "Expected: <START_COLUMN> <START_ROW> <END_COLUMN> <END_ROW> <PAWN_PROMOTION_PIECE>\n");
         }
         return "";
     }
@@ -222,7 +231,7 @@ public class ChessClient {
                 case "queen" -> promotionType = ChessPiece.PieceType.QUEEN;
                 case "rook" -> promotionType = ChessPiece.PieceType.ROOK;
                 default -> throw new ResponseException(400,
-                        "Pawn promotion piece must be bishop, knight, queen, or rook");
+                        "Pawn promotion piece must be bishop, knight, queen, or rook.\n");
             }
         }
         return promotionType;
@@ -231,15 +240,16 @@ public class ChessClient {
     public String leaveGame() throws ResponseException {
         assertInGame("leave a game");
         ws.leave(currentAuth.authToken(), currentGameID);
+        rootColor = PlayerColor.NONE;
         state = State.LOGGED_IN;
-        return "You have successfully left the game.";
+        return "You have successfully left the game.\n";
     }
 
     public String resignGame() throws ResponseException {
         assertInGame("resign a game");
         ws.resign(currentAuth.authToken(), currentGameID);
         state = State.LOGGED_IN;
-        return "You have successfully resigned.";
+        return "You have successfully resigned.\n";
     }
 
     public String help() {
@@ -317,10 +327,10 @@ public class ChessClient {
             try {
                 int coordinate = Integer.parseInt(param);
                 if (coordinate < 1 | coordinate > 8) {
-                    throw new ResponseException(400, "Both row values must be between 1-8.");
+                    throw new ResponseException(400, "Both row values must be between 1-8.\n");
                 }
             } catch (NumberFormatException ex) {
-                throw new ResponseException(400, "Both row values must be numbers.");
+                throw new ResponseException(400, "Both row values must be numbers.\n");
             }
         }
     }
@@ -337,7 +347,7 @@ public class ChessClient {
                 "h", 8
         );
         if (!conversionMap.containsKey(col)) {
-            throw new ResponseException(400, "Both column values must be letters between a-h.");
+            throw new ResponseException(400, "Both column values must be letters between a-h.\n");
         }
         return conversionMap.get(col);
     }

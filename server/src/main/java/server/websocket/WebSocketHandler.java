@@ -203,9 +203,9 @@ public class WebSocketHandler {
      */
     private static NotificationMessage generateConnectNotification(String rootUser, GameData targetGame) {
         String message = String.format("%s has joined the game as an observer!", rootUser);
-        if (targetGame.whiteUsername().equals(rootUser)) {
+        if (Objects.equals(rootUser, targetGame.whiteUsername())) {
             message = String.format("%s has joined the game as %s!", rootUser, "white");
-        } else if (targetGame.blackUsername().equals(rootUser)) {
+        } else if (Objects.equals(rootUser, targetGame.blackUsername())) {
             message = String.format("%s has joined the game as %s!", rootUser, "black");
         }
         return new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);

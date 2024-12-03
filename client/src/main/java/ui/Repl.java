@@ -46,10 +46,14 @@ public class Repl implements NotificationHandler {
 
     public void notify(ServerMessage serverMessage, String currentUser) {
         if (serverMessage instanceof NotificationMessage notification) {
-            System.out.println(notification.getMessage());
+            System.out.println();
+            System.out.println(RESET_TEXT_BLINKING + RESET_TEXT_COLOR + SET_TEXT_COLOR_RED + SET_TEXT_BOLD +
+                    notification.getMessage() + RESET_TEXT_BOLD_FAINT);
             printPrompt();
         } else if (serverMessage instanceof ErrorMessage error) {
-            System.out.println(error.getErrorMessage());
+            System.out.println();
+            System.out.println(RESET_TEXT_BLINKING + RESET_TEXT_COLOR + SET_TEXT_COLOR_RED + SET_TEXT_BOLD +
+                    error.getErrorMessage() + RESET_TEXT_BOLD_FAINT);
             printPrompt();
         } else {
             LoadGameMessage loadGame = (LoadGameMessage) serverMessage;

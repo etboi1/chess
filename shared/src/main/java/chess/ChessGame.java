@@ -13,6 +13,7 @@ import java.util.Objects;
 public class ChessGame {
     private ChessBoard gameBoard = new ChessBoard();
     private TeamColor currentTeam = TeamColor.WHITE;
+    private GameState currentState = GameState.IN_PROGRESS;
 
     public ChessGame() {
         gameBoard.resetBoard();
@@ -22,7 +23,11 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        return TeamColor.WHITE;
+        return currentTeam;
+    }
+
+    public GameState getGameState() {
+        return currentState;
     }
 
     /**
@@ -65,6 +70,11 @@ public class ChessGame {
     public enum TeamColor {
         WHITE,
         BLACK
+    }
+
+    public enum GameState {
+        IN_PROGRESS,
+        FINISHED
     }
 
     /**
@@ -197,10 +207,14 @@ public class ChessGame {
         if (!isInCheck(teamColor)) {
             return false;
         }
-        return playerHasPossibleMove(teamColor);
+        if (playerHasNoPossibleMoves(teamColor)) {
+            currentState = GameState.FINISHED;
+            return true;
+        }
+        return false;
     }
 
-    private boolean playerHasPossibleMove(TeamColor teamColor) {
+    private boolean playerHasNoPossibleMoves(TeamColor teamColor) {
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition square = new ChessPosition(row, col);
@@ -235,7 +249,11 @@ public class ChessGame {
         if (isInCheckmate(teamColor)) {
             return false;
         }
-        return playerHasPossibleMove(teamColor);
+        if (playerHasNoPossibleMoves(teamColor)) {
+            currentState = GameState.FINISHED;
+            return true;
+        }
+        return false;
     }
 
     /**

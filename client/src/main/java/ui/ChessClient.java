@@ -164,9 +164,11 @@ public class ChessClient {
             } catch (ResponseException ex) {
                 throw new ResponseException(400, ex.getMessage());
             }
+        } else {
+            throw new ResponseException(400,
+                    "Expected: <GAME_NUMBER> [WHITE|BLACK], where <GAME_NUMBER> is a number matching desired game.\n");
         }
-        throw new ResponseException(400,
-                "Expected: <GAME_NUMBER> [WHITE|BLACK], where <GAME_NUMBER> is a number matching desired game.\n");
+        return "";
     }
 
     public String observeGame(String... params) throws ResponseException {
@@ -177,8 +179,10 @@ public class ChessClient {
             ws = new WebSocketFacade(serverUrl, notificationHandler, currentAuth.username());
             ws.join(currentAuth.authToken(), gameID);
             state = State.GAMEPLAY;
+        } else {
+            throw new ResponseException(400, "Expected: <GAME_NUMBER>, which is a number matching desired game.\n");
         }
-        throw new ResponseException(400, "Expected: <GAME_NUMBER>, which is a number matching desired game.\n");
+        return "";
     }
 
     public String redrawGame() throws ResponseException {
@@ -202,8 +206,10 @@ public class ChessClient {
             ChessPiece.PieceType promotionType = getPromotionType(params);
             ChessMove move = new ChessMove(startPosition, endPosition, promotionType);
             ws.makeMove(currentAuth.authToken(), currentGameID, move);
+        } else {
+            throw new ResponseException(400, "Expected: <START_COLUMN> <START_ROW> <END_COLUMN> <END_ROW> <PAWN_PROMOTION_PIECE>");
         }
-        throw new ResponseException(400, "Expected: <START_COLUMN> <START_ROW> <END_COLUMN> <END_ROW> <PAWN_PROMOTION_PIECE>");
+        return "";
     }
 
     private ChessPiece.PieceType getPromotionType(String[] params) throws ResponseException {

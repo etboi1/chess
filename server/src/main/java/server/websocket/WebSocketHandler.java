@@ -118,7 +118,7 @@ public class WebSocketHandler {
         try {
             currentGame.game().makeMove(command.getMove());
         } catch (InvalidMoveException ex) {
-            sendErrorMessage("Error: You have attempted an invalid move." +
+            sendErrorMessage("Error: You have attempted an invalid move. " +
                     "Make sure it is your turn and that you typed in the intended coordinates.", session);
             return;
         }

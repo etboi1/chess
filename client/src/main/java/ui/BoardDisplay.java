@@ -1,23 +1,17 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 import static ui.EscapeSequences.*;
 
 public class BoardDisplay {
 
-    public static void displayBoard(ChessBoard board) {
-        System.out.println();
-        printBoard(board, false);
-        System.out.print(SET_BG_COLOR_LIGHT_BLUE + SET_TEXT_COLOR_BLACK + "-".repeat(30) + RESET_BG_COLOR);
-        System.out.println();
-        printBoard(board, true);
-    }
+    public static void printBoard(ChessGame game, boolean flip, ChessPosition...squareOfInterest) {
 
-    public static void printBoard(ChessBoard board, boolean flip) {
+        ChessBoard board = game.getBoard();
 
         int start = flip ? 1 : 8;
         int end = flip ? 8 : 1;
@@ -29,13 +23,33 @@ public class BoardDisplay {
 
         printColumnLabels(flip, colStart, colEnd, colStep);
 
+        ChessPosition startSquare = squareOfInterest.length > 0 ? squareOfInterest[0] : null;
+        Collection<ChessPosition> validEndPositions = new HashSet<>();
+        if (startSquare != null) {
+            Collection<ChessMove> validMoves = game.validMoves(startSquare);
+            for (ChessMove move : validMoves) {
+                validEndPositions.add(move.getEndPosition());
+            }
+        }
+
         for (int row = start; flip ? row <= end : row >= end; row += step) {
             System.out.print(SET_BG_COLOR_LIGHT_BLUE + SET_TEXT_COLOR_BLACK + " " + row + " ");
             for (int col = colStart; flip ? col >= colEnd : col <= colEnd; col += colStep) {
-                if ((row + col) % 2 == 1) {
-                    System.out.print(SET_BG_COLOR_LIGHT_BROWN);
+                if (startSquare != null && row == startSquare.getRow() && col == startSquare.getColumn()) {
+                    System.out.print(SET_BG_COLOR_YELLOW);
+                }
+                else if ((row + col) % 2 == 1) {
+                    if (validEndPositions.contains(new ChessPosition(row, col))) {
+                        System.out.print(SET_BG_COLOR_GREEN);
+                    } else {
+                        System.out.print(SET_BG_COLOR_LIGHT_BROWN);
+                    }
                 } else {
-                    System.out.print(SET_BG_COLOR_BROWN);
+                    if (validEndPositions.contains(new ChessPosition(row, col))) {
+                        System.out.print(SET_BG_COLOR_DARK_GREEN);
+                    } else {
+                        System.out.print(SET_BG_COLOR_BROWN);
+                    }
                 }
 
                 ChessPiece piece = board.getPiece(new ChessPosition(row, col));

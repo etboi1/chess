@@ -59,17 +59,17 @@ public class Repl implements NotificationHandler {
             LoadGameMessage loadGame = (LoadGameMessage) serverMessage;
             System.out.println();
             if (Objects.equals(loadGame.game.whiteUsername(), currentUser)) {
-                BoardDisplay.printBoard(loadGame.game.game().getBoard(), false);
+                BoardDisplay.printBoard(loadGame.game.game(), false);
                 client.rootColor = ChessClient.PlayerColor.WHITE;
             } else if (Objects.equals(loadGame.game.blackUsername(), currentUser)) {
-                BoardDisplay.printBoard(loadGame.game.game().getBoard(), true);
+                BoardDisplay.printBoard(loadGame.game.game(), true);
                 client.rootColor = ChessClient.PlayerColor.BLACK;
             } else if (!Objects.equals(loadGame.game.whiteUsername(), currentUser) &&
                     !Objects.equals(loadGame.game.blackUsername(), currentUser)) {
-                BoardDisplay.printBoard(loadGame.game.game().getBoard(), false);
+                BoardDisplay.printBoard(loadGame.game.game(), false);
                 client.rootColor = ChessClient.PlayerColor.NONE;
             }
-            client.currentBoard = loadGame.game.game().getBoard();
+            client.currentGame = loadGame.game.game();
             printPrompt();
         }
     }

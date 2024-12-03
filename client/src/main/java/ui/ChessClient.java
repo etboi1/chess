@@ -1,9 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -25,7 +22,7 @@ public class ChessClient {
     public Map<Integer, Integer> gameNumToID = new HashMap<>();
     public State state = State.LOGGED_OUT;
     public PlayerColor rootColor = PlayerColor.NONE;
-    public ChessBoard currentBoard = null;
+    public ChessGame currentGame = null;
 
     public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
@@ -195,13 +192,25 @@ public class ChessClient {
 
     public String redrawGame() throws ResponseException {
         assertInGame("redraw the chess board");
-        BoardDisplay.printBoard(currentBoard, rootColor == PlayerColor.BLACK);
+        BoardDisplay.printBoard(currentGame, rootColor == PlayerColor.BLACK);
         return "";
     }
 
     public String highlightMoves(String... params) throws ResponseException {
         assertInGame("highlight legal moves");
-        return null;
+        if (params.length == 2) {
+            if (currentGame.getGameState() == ChessGame.GameState.FINISHED) {
+                throw new ResponseException(400, "There are no possible moves because the game is over.\n");
+            }
+            assertParamsNumeric(params[1]);
+            int row = Integer.parseInt(params[1]);
+            Integer col = convertColumn(params[0]);
+            BoardDisplay.printBoard(currentGame, rootColor == PlayerColor.BLACK, new ChessPosition(row, col));
+        } else {
+            throw new ResponseException(400, "Expected: <COLUMN> <ROW>, which are the coordinates of " +
+                    "the piece whose possible moves you'd like to see.\n");
+        }
+        return "";
     }
 
     public String makeMove(String... params) throws ResponseException {
@@ -327,10 +336,10 @@ public class ChessClient {
             try {
                 int coordinate = Integer.parseInt(param);
                 if (coordinate < 1 | coordinate > 8) {
-                    throw new ResponseException(400, "Both row values must be between 1-8.\n");
+                    throw new ResponseException(400, "Row values must be between 1-8.\n");
                 }
             } catch (NumberFormatException ex) {
-                throw new ResponseException(400, "Both row values must be numbers.\n");
+                throw new ResponseException(400, "Row values must be numbers.\n");
             }
         }
     }
@@ -347,7 +356,7 @@ public class ChessClient {
                 "h", 8
         );
         if (!conversionMap.containsKey(col)) {
-            throw new ResponseException(400, "Both column values must be letters between a-h.\n");
+            throw new ResponseException(400, "Column values must be letters between a-h.\n");
         }
         return conversionMap.get(col);
     }
@@ -365,11 +374,5 @@ public class ChessClient {
                     """);
         }
         return gameID;
-    }
-
-    private void loadBoard() {
-        ChessBoard board = new ChessBoard();
-        board.resetBoard();
-        BoardDisplay.displayBoard(board);
     }
 }

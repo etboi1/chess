@@ -290,7 +290,7 @@ public class ChessClient {
                 \tCOMMAND <PARAMETERS> - DESCRIPTION OF COMMAND
                 
                 \tredraw - the chess board
-                \thighlight <ROW> <COLUMN> - a piece's all legal moves
+                \thighlight <COLUMN> <ROW> - a piece's all legal moves
                 \tmove <START_COLUMN> <START_ROW> <END_COLUMN> <END_ROW> <PAWN_PROMOTION_PIECE> - make a move \
                 (and provide promotion piece type if moving pawn to end of board)
                 \tleave - quit this game

@@ -36,11 +36,11 @@ public class BoardDisplay {
             System.out.print(SET_BG_COLOR_LIGHT_BLUE + SET_TEXT_COLOR_BLACK + " " + row + " ");
             for (int col = colStart; flip ? col >= colEnd : col <= colEnd; col += colStep) {
                 if (startSquare != null && row == startSquare.getRow() && col == startSquare.getColumn()) {
-                    System.out.print(SET_BG_COLOR_YELLOW);
+                    System.out.print(SET_BG_COLOR_GREEN);
                 }
                 else if ((row + col) % 2 == 1) {
                     if (validEndPositions.contains(new ChessPosition(row, col))) {
-                        System.out.print(SET_BG_COLOR_GREEN);
+                        System.out.print(SET_BG_COLOR_BRIGHT_CYAN);
                     } else {
                         System.out.print(SET_BG_COLOR_LIGHT_BROWN);
                     }

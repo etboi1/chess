@@ -124,14 +124,12 @@ public class WebSocketHandler {
         }
         //Update board in database
         gameDataAccess.updateGame(command.getGameID(), currentGame);
-        //Send the LOAD_GAME server message to all other users involved in game
+        //Send the LOAD_GAME server message to all users involved in game
         var loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, currentGame);
-        connections.broadcast(rootClient, command.getGameID(), loadGameMessage);
+        connections.broadcast(null, command.getGameID(), loadGameMessage);
         //Send the notification to all others involved in game
         var notification = generateMoveNotification(command, piece, rootClient);
         connections.broadcast(rootClient, command.getGameID(), notification);
-        //Send the LOAD_GAME message back to the root user
-        session.getRemote().sendString(new Gson().toJson(loadGameMessage));
 
         ChessGame.TeamColor oppositePlayerColor = currentGame.game().getTeamTurn();
         checkForGameEndingMoves(currentGame, oppositePlayerColor, session);
@@ -155,8 +153,25 @@ public class WebSocketHandler {
         connections.broadcast(rootClient, gameID, notification);
     }
 
-    private void resign(String authToken, Integer gameID, Session session) {
-
+    private void resign(String authToken, Integer gameID, Session session) throws Exception {
+        if (isUnautherized(authDataAccess.getAuth(authToken), session)) {
+            return;
+        }
+        var rootClient = authDataAccess.getAuth(authToken).username();
+        var activeGame = gameDataAccess.getGame(gameID);
+        var playerColor = getPlayerColor(rootClient, activeGame);
+        if (activeGame.game().getGameState() == ChessGame.GameState.FINISHED) {
+            sendErrorMessage("Error: cannot resign game after the game is already over.", session);
+            return;
+        } else if (playerColor.equals("observer")) {
+            sendErrorMessage("Error: observers cannot resign on behalf of a player.", session);
+            return;
+        }
+        activeGame.game().setGameState(ChessGame.GameState.FINISHED);
+        gameDataAccess.updateGame(gameID, activeGame);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                String.format("%s has resigned, forfeiting the game.", rootClient));
+        connections.broadcast(null, gameID, notification);
     }
 
     /**

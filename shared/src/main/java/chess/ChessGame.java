@@ -39,6 +39,10 @@ public class ChessGame {
         currentTeam = team;
     }
 
+    public void setGameState(GameState newState) {
+        currentState = newState;
+    }
+
     private void nextTurn() {
         if (currentTeam == TeamColor.WHITE) {
             currentTeam = TeamColor.BLACK;

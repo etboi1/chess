@@ -237,6 +237,7 @@ public class ChessClient {
 
     public String resignGame() throws ResponseException {
         assertInGame("resign a game");
+        ws.resign(currentAuth.authToken(), currentGameID);
         state = State.LOGGED_IN;
         return "You have successfully resigned.";
     }

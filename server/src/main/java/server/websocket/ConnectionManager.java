@@ -25,7 +25,7 @@ public class ConnectionManager {
                 if (!c.connectedUser.equals(rootClient)) {
                     c.send(new Gson().toJson(serverMessage));
                 }
-            } else {
+            } else if (!c.session.isOpen()){
                 removeList.add(c);
             }
         }

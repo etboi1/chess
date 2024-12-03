@@ -72,12 +72,12 @@ public class ServerFacadeTests {
         //No username provided
         Exception ex = Assertions.assertThrows(ResponseException.class,
                 () -> facade.register(null, "password", "email"));
-        Assertions.assertEquals("failure: 400", ex.getMessage());
+        Assertions.assertEquals("Error: Bad Request\n", ex.getMessage());
         //Attempt to reuse existing username
         userDao.createUser(goodUser);
         Exception redundantEx = Assertions.assertThrows(ResponseException.class,
                 () -> facade.register(goodUser.username(), "newPassword", "newEmail"));
-        Assertions.assertEquals("failure: 403", redundantEx.getMessage());
+        Assertions.assertEquals("Error: User already exists\n", redundantEx.getMessage());
     }
 
     @Test
@@ -98,13 +98,13 @@ public class ServerFacadeTests {
         //User Doesn't Exist
         Exception ex = Assertions.assertThrows(ResponseException.class,
                 () -> facade.login("username", "password"));
-        Assertions.assertEquals("failure: 401", ex.getMessage());
+        Assertions.assertEquals("Error: unauthorized\n", ex.getMessage());
 
         //Unauthorized (Wrong Password)
         userDao.createUser(goodUser);
         Exception unAuthEx = Assertions.assertThrows(ResponseException.class,
                 () -> facade.login("username", "badPassword"));
-        Assertions.assertEquals("failure: 401", unAuthEx.getMessage());
+        Assertions.assertEquals("Error: unauthorized\n", unAuthEx.getMessage());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class ServerFacadeTests {
         Assertions.assertEquals(registerRes.authToken(), authDao.getAuth(registerRes.authToken()).authToken());
         Exception ex = Assertions.assertThrows(ResponseException.class,
                 () -> facade.logout("badAuthToken"));
-        Assertions.assertEquals("failure: 401", ex.getMessage());
+        Assertions.assertEquals("Error: unauthorized\n", ex.getMessage());
     }
 
     @Test
@@ -145,11 +145,11 @@ public class ServerFacadeTests {
         var registerRes = userService.registerUser(goodUser);
         Exception ex = Assertions.assertThrows(ResponseException.class,
                 () -> facade.createGame("badAuthToken", "gameName"));
-        Assertions.assertEquals("failure: 401", ex.getMessage());
+        Assertions.assertEquals("Error: unauthorized\n", ex.getMessage());
         //Trying to create a game with no name
         Exception badNameEx = Assertions.assertThrows(ResponseException.class,
                 () -> facade.createGame(registerRes.authToken(), null));
-        Assertions.assertEquals("failure: 400", badNameEx.getMessage());
+        Assertions.assertEquals("Error: bad request\n", badNameEx.getMessage());
     }
 
     GameData goodGame = new GameData(null, null, null, "gameName", new ChessGame());
@@ -177,7 +177,7 @@ public class ServerFacadeTests {
         var registerRes = userService.registerUser(goodUser);
         Exception ex = Assertions.assertThrows(ResponseException.class,
                 () -> facade.listGames("badAuthToken"));
-        Assertions.assertEquals("failure: 401", ex.getMessage());
+        Assertions.assertEquals("Error: unauthorized\n", ex.getMessage());
     }
 
     @Test
@@ -201,10 +201,10 @@ public class ServerFacadeTests {
         );
         Exception ex = Assertions.assertThrows(ResponseException.class,
                 () -> facade.joinGame(registerRes.authToken(), "WHITE", 1));
-        Assertions.assertEquals("failure: 403", ex.getMessage());
+        Assertions.assertEquals("Error: already taken\n", ex.getMessage());
         Exception badReqEx = Assertions.assertThrows(ResponseException.class,
                 () -> facade.joinGame(registerRes.authToken(), "white", 1));
-        Assertions.assertEquals("failure: 400", badReqEx.getMessage());
+        Assertions.assertEquals("Error: bad request\n", badReqEx.getMessage());
     }
 
     @Test

@@ -12,6 +12,9 @@ import websocket.WebSocketFacade;
 
 import java.util.*;
 
+import static ui.EscapeSequences.*;
+import static ui.EscapeSequences.SET_TEXT_COLOR_GREEN;
+
 public class ChessClient {
     private final ServerFacade server;
     private AuthData currentAuth;
@@ -258,10 +261,18 @@ public class ChessClient {
         if (currentGame.getGameState() == ChessGame.GameState.FINISHED) {
             throw new ResponseException(400, "You cannot resign because the game is already over.");
         }
-        assertInGame("resign a game");
-        ws.resign(currentAuth.authToken(), currentGameID);
-        state = State.LOGGED_IN;
-        return "You have successfully resigned.\n";
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Are you sure you want to resign? (Y|N)\n" +
+                "\n" + RESET_TEXT_BLINKING + RESET_TEXT_COLOR +
+                SET_TEXT_BLINKING + SET_TEXT_COLOR_GREEN +
+                "[" + state + "] " + ">>> ");
+        String input = scanner.nextLine();
+        if (input.equalsIgnoreCase("Y")) {
+            assertInGame("resign a game");
+            ws.resign(currentAuth.authToken(), currentGameID);
+            return "You have successfully resigned.\n";
+        }
+        return "";
     }
 
     public String help() {

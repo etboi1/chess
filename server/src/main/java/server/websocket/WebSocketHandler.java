@@ -234,7 +234,7 @@ public class WebSocketHandler {
         String endCol = convertColumn(command.getMove().getEndPosition().getColumn());
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                 String.format("%s moved the %s at %s%s to %s%s.",
-                        rootClient, pieceType, startRow, startCol, endRow, endCol));
+                        rootClient, pieceType, startCol, startRow, endCol, endRow));
         return notification;
     }
 
@@ -257,9 +257,11 @@ public class WebSocketHandler {
                 gameData.whiteUsername() : gameData.blackUsername();
         NotificationMessage notification = null;
         if (gameData.game().isInCheckmate(oppositePlayerColor)) {
+            gameDataAccess.updateGame(gameData.gameID(), gameData);
             notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
-                    String.format("%s is in checkmate!", oppositeUsername));
+                    String.format("%s is in checkmate - the game is over!", oppositeUsername));
         } else if (gameData.game().isInStalemate(oppositePlayerColor)) {
+            gameDataAccess.updateGame(gameData.gameID(), gameData);
             notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                     "The game has ended in a stalemate!");
         } else if (gameData.game().isInCheck(oppositePlayerColor)) {

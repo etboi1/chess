@@ -255,6 +255,9 @@ public class ChessClient {
     }
 
     public String resignGame() throws ResponseException {
+        if (currentGame.getGameState() == ChessGame.GameState.FINISHED) {
+            throw new ResponseException(400, "You cannot resign because the game is already over.");
+        }
         assertInGame("resign a game");
         ws.resign(currentAuth.authToken(), currentGameID);
         state = State.LOGGED_IN;
